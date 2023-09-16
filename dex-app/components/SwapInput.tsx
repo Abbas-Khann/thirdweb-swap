@@ -20,7 +20,7 @@ export default function SwapInput({
 }: Props) {
   return (
     <div className=" w-full flex items-center bg-transparent border border-slate-700  rounded-2xl px-5">
-      <Image
+      <img
         alt=""
         src={tokenImage || "/token.png"}
         width={100}
