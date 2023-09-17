@@ -20,6 +20,7 @@ import {
 } from "@thirdweb-dev/react";
 import { useEffect, useState } from "react";
 import SwapInput from "@/components/SwapInput";
+import eth from "../assets/eth.png";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -167,8 +168,10 @@ export default function Home() {
             thirdweb Swap
           </span>
         </h1>
-        <div className=" relative bg-[#212429] backdrop-blur-md  bg-opacity-30 border border-slate-700 p-10 py-12  rounded-xl flex-col gap-6 flex items-center justify-center">
-          <div className=" absolute top-4 left-10  text-gray-200 mr-auto text-2xl font-semibold">Swap</div>
+        <div className=" w-[90vw] md:w-auto relative bg-[#212429] backdrop-blur-md  bg-opacity-30 border border-slate-700 p-10 py-12  rounded-xl flex-col gap-6 flex items-center justify-center">
+          <div className=" absolute top-4 left-10  text-gray-200 mr-auto text-2xl font-semibold">
+            Swap
+          </div>
           <div className=" pt-5 flex items-center flex-col justify-center gap-3">
             <SwapInput
               current={currentFrom}
@@ -176,7 +179,6 @@ export default function Home() {
               max={nativeBalance?.displayValue}
               value={nativeValue}
               setValue={setNativeValue}
-              tokenImage=""
               // tokenImage={resolveIpfsUri(ACTIVE_CHAIN.icon!.url)}
             />
 
@@ -197,13 +199,15 @@ export default function Home() {
               max={tokenBalance?.displayValue}
               value={tokenValue}
               setValue={setTokenValue}
-              tokenImage={tokenMetadata?.image}
+              // tokenImage={tokenMetadata?.image}
+              tokenImage={eth}
             />
           </div>
 
           {address ? (
             <button
-              className="w-full py-4 px-6 text-2xl text-black bg-white font-medium rounded-lg transition-all ease-in-out active:scale-95"
+              // bg-sky-500 rounded-md active:scale-95 transition-all ease-in-out  bg-gradient-to-r from-[#1b1125] to-black
+              className="w-full py-4 px-6 text-2xl text-white font-semibold bg-[#8a4fc5] rounded-lg transition-all ease-in-out active:scale-95"
               onClick={executeSwap}
               disabled={loading}
             >
