@@ -7,8 +7,8 @@ export default function Navbar() {
   return (
     <>
       <div className=" flex items-center justify-around pt-4 ">
-        <Image src={logo} alt="" className=" w-44" />
-        <ConnectWallet theme="dark" />
+        <Image src={logo} alt="" className=" w-36 md:w-44" />
+        <ConnectWallet theme="light" />
       </div>
     </>
   );
