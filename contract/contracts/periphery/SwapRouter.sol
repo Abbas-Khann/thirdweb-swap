@@ -12,7 +12,7 @@ import {IWETH} from "../interfaces/IWETH.sol";
 
 /// Followed Uniswap V2 Router 02 implementation
 
-contract XSwapRouter {
+contract SwapRouter {
     using SafeMath for uint256;
 
     address public immutable factory;
