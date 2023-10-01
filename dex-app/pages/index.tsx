@@ -2,7 +2,12 @@ import Head from "next/head";
 import { Inter } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import { Spinner, useToast } from "@chakra-ui/react";
-import { ACTIVE_CHAIN, DEX_ADDRESS, TOKEN_ADDRESS } from "@/const/details";
+import {
+  ACTIVE_CHAIN,
+  DEX_ADDRESS,
+  TOKEN_ADDRESS,
+  WETH_ADDRESS,
+} from "@/const/details";
 import {
   ConnectWallet,
   toEther,
@@ -27,6 +32,7 @@ const inter = Inter({ subsets: ["latin"] });
 export default function Home() {
   const toast = useToast();
   const address = useAddress();
+
   const { contract: tokenContract } = useContract(TOKEN_ADDRESS, "token");
   const { contract: dexContract } = useContract(DEX_ADDRESS, "custom");
   const { data: symbol } = useContractRead(tokenContract, "symbol");

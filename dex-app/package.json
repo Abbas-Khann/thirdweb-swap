@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "npx --yes thirdweb@latest generate"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.5.5",
@@ -24,6 +25,7 @@
     "next": "13.3.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "thirdweb": "^0.12.5",
     "typescript": "5.0.4"
   },
   "devDependencies": {
