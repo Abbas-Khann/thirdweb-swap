@@ -21,13 +21,13 @@ import {
   WETH_ADDRESS,
 } from "@/const/details";
 import { formatEther, parseEther } from "ethers/lib/utils";
-
+import { tokens } from "@/const/tokens";
 export default function Swap() {
   const address = useAddress();
   const amountOutMin = 1;
   const amountInMax = 1;
-  const [selectedToken1, setSelectedToken1] = useState();
-  const [selectedToken2, setSelectedToken2] = useState();
+  const [selectedToken1, setSelectedToken1] = useState(tokens[0]);
+  const [selectedToken2, setSelectedToken2] = useState(tokens[1]);
   const [reserveA, setReserveA] = useState<number | undefined>();
   const [reserveB, setReserveB] = useState<number | undefined>();
   const [amountIn, setAmountIn] = useState<number>(0);
@@ -64,15 +64,44 @@ export default function Swap() {
     return _deadline;
   };
 
+  const handleSubmit = () => {
+    const path = [selectedToken1.address, selectedToken2.address];
+    try {
+      if (exactAmountIn) {
+        if (selectedToken1.isNative) {
+          swapExactETHForTokens(amountOne, amountTwo, path);
+        } else if (selectedToken2.isNative) {
+          swapExactTokensForETH(amountOne, path, amountTwo);
+        } else {
+          swapExactTokensForTokens(amountOne, amountTwo, path);
+        }
+      } else if (exactAmountOut) {
+        if (selectedToken1.isNative) {
+          swapETHForExactTokens(amountTwo, path, amountOne);
+        } else if (selectedToken2.isNative) {
+          swapTokensForExactETH(amountTwo, path, amountOne);
+        } else {
+          swapTokensForExactTokens(amountTwo, amountOne, path);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const swapExactTokensForTokens = async (
     valueIn: number,
+    valueOutMin: number,
     path: `0x${string}`[]
   ) => {
+    await approveToken({
+      args: [SWAP_ROUTER_ADDRESS, parseEther(valueIn.toString())],
+    });
     const deadline = getDeadline();
 
     const tx = await routerContract?.call("swapExactTokensForTokens", [
       parseEther(valueIn.toString()),
-      amountOutMin,
+      parseEther(valueOutMin.toString()),
       path,
       address,
       deadline,
@@ -82,13 +111,17 @@ export default function Swap() {
 
   const swapTokensForExactTokens = async (
     valueOut: number,
+    valueInMax: number,
     path: `0x${string}`[]
   ) => {
+    // await approveToken({
+    //   args: [SWAP_ROUTER_ADDRESS, parseEther(valueIn.toString())],
+    // });
     const deadline = getDeadline();
 
     const tx = await routerContract?.call("swapTokensForExactTokens", [
       parseEther(valueOut.toString()),
-      amountInMax,
+      parseEther(valueInMax.toString()),
       path,
       address,
       deadline,
@@ -114,13 +147,14 @@ export default function Swap() {
 
   const swapExactETHForTokens = async (
     valueIn: number,
+    valueOutMin: number,
     path: `0x${string}`[]
   ) => {
     const deadline = getDeadline();
 
     const tx = await routerContract?.call(
       "swapExactETHForTokens",
-      [amountOutMin, path, address, deadline],
+      [parseEther(valueOutMin.toString()), path, address, deadline],
       { value: parseEther(valueIn.toString()) }
     );
     console.log(tx);
@@ -128,13 +162,17 @@ export default function Swap() {
 
   const swapExactTokensForETH = async (
     valueIn: number,
-    path: `0x${string}`[]
+    path: `0x${string}`[],
+    valueOutMin: number
   ) => {
+    await approveToken({
+      args: [SWAP_ROUTER_ADDRESS, parseEther(valueIn.toString())],
+    });
     const deadline = getDeadline();
 
     const tx = await routerContract?.call("swapExactTokensForETH", [
       parseEther(valueIn.toString()),
-      amountOutMin,
+      parseEther(valueOutMin.toString()),
       path,
       address,
       deadline,
@@ -148,7 +186,9 @@ export default function Swap() {
     valueIn: number
   ) => {
     // approve tokens to be sent
-
+    await approveToken({
+      args: [SWAP_ROUTER_ADDRESS, parseEther(valueIn.toString())],
+    });
     const deadline = getDeadline();
 
     const tx = await routerContract?.call("swapTokensForExactETH", [
@@ -209,11 +249,11 @@ export default function Swap() {
 
   useEffect(() => {
     if (
-      selectedToken1 != 0 &&
-      selectedToken2 != 0 &&
+      selectedToken1 != undefined &&
+      selectedToken2 != undefined &&
       selectedToken1 != selectedToken2
     ) {
-      getReserves(selectedToken1, selectedToken2);
+      getReserves(selectedToken1.address, selectedToken2.address);
     }
   }, [selectedToken1, selectedToken2]);
 
