@@ -23,6 +23,7 @@ import {
 import { formatEther, parseEther } from "ethers/lib/utils";
 import { tokens } from "@/const/tokens";
 export default function Swap() {
+  const sdk = useSDK();
   const address = useAddress();
   const amountOutMin = 1;
   const amountInMax = 1;
@@ -37,16 +38,16 @@ export default function Swap() {
   const [exactAmountIn, setExactAmountIn] = useState<boolean>(false);
   const [exactAmountOut, setExactAmountOut] = useState<boolean>(false);
 
-  const { contract: tokenContract } = useContract(TOKEN_ADDRESS, "token");
+  // const { contract: tokenContract } = useContract(TOKEN_ADDRESS, "token");
   const { contract: wethContract } = useContract(WETH_ADDRESS, "weth");
   const { contract: routerContract } = useContract(
     SWAP_ROUTER_ADDRESS,
     "custom"
   );
-  const { mutateAsync: approveToken } = useContractWrite(
-    tokenContract,
-    "approve"
-  );
+  // const { mutateAsync: approveToken } = useContractWrite(
+  //   tokenContract,
+  //   "approve"
+  // );
 
   // const { data: reserve } = useContractRead(routerContract, "getReserve", [
   //   selectedToken1,
@@ -57,6 +58,19 @@ export default function Swap() {
   //     routerContract,
   //     "swapExactTokensForTokens"
   //   );
+
+  const approveToken = async (tokenAddress: `0x${string}`, amount: number) => {
+    try {
+      const contract = await sdk?.getContract(tokenAddress);
+      const tx = await contract?.call("approve", [
+        SWAP_ROUTER_ADDRESS,
+        parseEther(amount.toString()),
+      ]);
+      console.log(tx);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const getDeadline = () => {
     const _deadline = Math.floor(Date.now() / 1000) + 600;
@@ -94,9 +108,7 @@ export default function Swap() {
     valueOutMin: number,
     path: `0x${string}`[]
   ) => {
-    await approveToken({
-      args: [SWAP_ROUTER_ADDRESS, parseEther(valueIn.toString())],
-    });
+    await approveToken(path[0], valueIn);
     const deadline = getDeadline();
 
     const tx = await routerContract?.call("swapExactTokensForTokens", [
@@ -114,9 +126,7 @@ export default function Swap() {
     valueInMax: number,
     path: `0x${string}`[]
   ) => {
-    // await approveToken({
-    //   args: [SWAP_ROUTER_ADDRESS, parseEther(valueIn.toString())],
-    // });
+    await approveToken(path[0], valueInMax);
     const deadline = getDeadline();
 
     const tx = await routerContract?.call("swapTokensForExactTokens", [
@@ -165,9 +175,7 @@ export default function Swap() {
     path: `0x${string}`[],
     valueOutMin: number
   ) => {
-    await approveToken({
-      args: [SWAP_ROUTER_ADDRESS, parseEther(valueIn.toString())],
-    });
+    await approveToken(path[0], valueIn);
     const deadline = getDeadline();
 
     const tx = await routerContract?.call("swapExactTokensForETH", [
@@ -186,9 +194,7 @@ export default function Swap() {
     valueIn: number
   ) => {
     // approve tokens to be sent
-    await approveToken({
-      args: [SWAP_ROUTER_ADDRESS, parseEther(valueIn.toString())],
-    });
+    await approveToken(path[0], valueIn);
     const deadline = getDeadline();
 
     const tx = await routerContract?.call("swapTokensForExactETH", [
