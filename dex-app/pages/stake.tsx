@@ -28,7 +28,10 @@ export default function stake() {
 
   const address = useAddress();
   const sdk = useSDK();
-  const { contract: stakingTokenContract } = useContract(STAKING_TOKEN, "weth");
+  const { contract: stakingTokenContract } = useContract(
+    STAKING_TOKEN,
+    "token"
+  );
   const { contract: rewardTokenContract } = useContract(REWARD_TOKEN, "token");
   const { contract: wethContract } = useContract(WETH_ADDRESS, "custom");
   const { contract: stakingContract } = useContract(STAKING_ADDRESS, "custom");

@@ -35,3 +35,27 @@ export const tokens: TokenType[] = [
     logo: "",
   },
 ];
+
+export const loanTokens: TokenType[] = [
+  {
+    name: "DAI",
+    symbol: "DAI",
+    isNative: false,
+    address: "0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357",
+    logo: "",
+  },
+  {
+    name: "USDC",
+    symbol: "USDC",
+    isNative: false,
+    address: "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8s",
+    logo: "",
+  },
+  {
+    name: "USDT",
+    symbol: "USDT",
+    isNative: false,
+    address: "0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0s",
+    logo: "",
+  },
+];
