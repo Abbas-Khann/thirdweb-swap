@@ -26,20 +26,45 @@ const tokenList = () => {
     "getAllReservesTokens"
   );
 
+  useEffect(() => {
+    // console.log(allReserveTokens);
+    getAllAssetInfo();
+  }, [allReserveTokens]);
+
   /// For all the reserve tokens , or the ones we have in collection, fetch the reserve data
 
   const getReserveInfo = async (
     assetAddress: `0x${string}`
   ): Promise<ReserveDataType | undefined> => {
     try {
+      console.log(assetAddress);
       const reserveData = await poolDataProviderContract?.call(
         "getReserveData",
         [assetAddress]
       );
       console.log(reserveData);
-      // convert the data and set as per the Type defined
-      // We can also get more info
-      return reserveData;
+      if (reserveData) {
+        const reserveInfo: ReserveDataType = {
+          asset: assetAddress,
+          totalSupply: formatEther(reserveData.totalAToken.toString()),
+          totalStableDebt: formatEther(reserveData.totalStableDebt.toString()),
+          totalVariableDebt: formatEther(
+            reserveData.totalVariableDebt.toString()
+          ),
+          borrowRateStable: formatEther(
+            reserveData.stableBorrowRate.toString()
+          ),
+          borrowRateVariable: formatEther(
+            reserveData.variableBorrowRate.toString()
+          ),
+        };
+        console.log(reserveInfo);
+        // convert the data and set as per the Type defined
+        // define as needed for the frontend
+        // We can also get more info
+        return reserveInfo;
+      }
+
       // https://docs.aave.com/developers/core-contracts/pool#getreservedata
     } catch (error) {
       console.log(error);
@@ -47,15 +72,15 @@ const tokenList = () => {
   };
 
   const getAllAssetInfo = async () => {
-    let promises: ReserveDataType[] = [];
-    loanTokens.forEach(async (loanToken) => {
+    let data: ReserveDataType[] = [];
+    await loanTokens.forEach(async (loanToken) => {
       const info = await getReserveInfo(loanToken.address);
       if (info) {
-        promises.push(info);
+        data.push(info);
       }
     });
-
-    setAssetsInfo(await Promise.all(promises));
+    console.log(data);
+    setAssetsInfo(data);
   };
 
   return <div>tokenList</div>;

@@ -28,16 +28,16 @@ export default function App({ Component, pageProps }: AppProps) {
         smartWallet(metamaskWallet({ recommended: true }), smartWalletOptions),
         smartWallet(coinbaseWallet(), smartWalletOptions),
         smartWallet(walletConnect(), smartWalletOptions),
-        smartWallet(
-          safeWallet({
-            personalWallets: [
-              metamaskWallet(),
-              coinbaseWallet(),
-              walletConnect(),
-            ],
-          }),
-          smartWalletOptions
-        ),
+        // smartWallet(
+        //   safeWallet({
+        //     personalWallets: [
+        //       metamaskWallet(),
+        //       coinbaseWallet(),
+        //       walletConnect(),
+        //     ],
+        //   }),
+        //   smartWalletOptions
+        // ),
         smartWallet(localWallet(), smartWalletOptions),
         smartWallet(
           magicLink({
