@@ -24,7 +24,7 @@ import { Console } from "console";
 
 export default function Pool() {
   const [selectedToken1, setSelectedToken1] = useState(tokens[0]);
-  const [selectedToken2, setSelectedToken2] = useState(tokens[1]);
+  const [selectedToken2, setSelectedToken2] = useState(tokens[2]);
   const [desiredAmountA, setDesiredAmountA] = useState(0);
   const [desiredAmountB, setDesiredAmountB] = useState(0);
 
@@ -186,7 +186,7 @@ export default function Pool() {
         tokenA.address,
         tokenB.address,
       ]);
-      const liqAmount = formatUnits(_liquidity.toString(), 6);
+      const liqAmount = formatUnits(_liquidity.toString(), 18);
       console.log(liqAmount);
       return liqAmount;
     } catch (error) {}
@@ -222,7 +222,7 @@ export default function Pool() {
         const _removeLiquidity = await routerContract?.call("removeLiquidity", [
           addressTokenA,
           addressTokenB,
-          parseUnits(liquidityAmount.toString(), 6),
+          parseEther(liquidityAmount.toString()),
           1,
           1,
           address,
@@ -251,7 +251,7 @@ export default function Pool() {
           "removeLiquidityETH",
           [
             addressTokenA,
-            parseUnits(liquidityAmount.toString(), 6),
+            parseEther(liquidityAmount.toString()),
             1,
             1,
             address,
@@ -319,8 +319,8 @@ export default function Pool() {
       if (amountB) {
         const _fetchQuote = await routerContract?.call("quote", [
           parseUnits(amountB.toString(), selectedToken2.decimals),
-          parseUnits(reserveB.toString(), selectedToken2.decimals),
           parseUnits(reserveA.toString(), selectedToken1.decimals),
+          parseUnits(reserveB.toString(), selectedToken2.decimals),
         ]);
         console.log(formatUnits(_fetchQuote, selectedToken1.decimals));
         // setQuote(_fetchQuote);

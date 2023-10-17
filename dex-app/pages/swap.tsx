@@ -20,20 +20,25 @@ import {
   TOKEN_ADDRESS,
   WETH_ADDRESS,
 } from "@/const/details";
-import { formatEther, parseEther } from "ethers/lib/utils";
-import { tokens } from "@/const/tokens";
+import {
+  formatEther,
+  formatUnits,
+  parseEther,
+  parseUnits,
+} from "ethers/lib/utils";
+import { TokenType, tokens } from "@/const/tokens";
 
 export default function Swap() {
   const sdk = useSDK();
   const address = useAddress();
-  const amountOutMin = 1;
-  const amountInMax = 1;
+  const amountOutMin = 0;
+  const amountInMax = 0;
   const [selectedToken1, setSelectedToken1] = useState(tokens[0]);
-  const [selectedToken2, setSelectedToken2] = useState(tokens[1]);
-  const [reserveA, setReserveA] = useState<number | undefined>();
-  const [reserveB, setReserveB] = useState<number | undefined>();
-  const [amountIn, setAmountIn] = useState<number>(0);
-  const [amountOut, setAmountOut] = useState<number>(0);
+  const [selectedToken2, setSelectedToken2] = useState(tokens[2]);
+  const [reserveA, setReserveA] = useState<number>(0);
+  const [reserveB, setReserveB] = useState<number>(0);
+  // const [amountIn, setAmountIn] = useState<number>(0);
+  // const [amountOut, setAmountOut] = useState<number>(0);
   const [amountOne, setAmountOne] = useState<number>(0);
   const [amountTwo, setAmountTwo] = useState<number>(0);
   const [exactAmountIn, setExactAmountIn] = useState<boolean>(false);
@@ -208,12 +213,20 @@ export default function Swap() {
     console.log(tx);
   };
 
-  const getReserves = async (tokenA: string, tokenB: string) => {
-    const response = await routerContract?.call("getReserve", [tokenA, tokenB]);
-    setReserveA(Number(formatEther(response.reserveA)));
-    setReserveB(Number(formatEther(response.reserveB)));
-    console.log(formatEther(response.reserveA), formatEther(response.reserveB));
-    // setOutAmount(_getAmount);
+  const getReserves = async (tokenA: TokenType, tokenB: TokenType) => {
+    const response = await routerContract?.call("getReserve", [
+      tokenA.address,
+      tokenB.address,
+    ]);
+    console.log(response);
+    if (response) {
+      setReserveA(Number(formatUnits(response.reserveA, tokenA.decimals)));
+      setReserveB(Number(formatUnits(response.reserveB, tokenB.decimals)));
+      console.log(
+        formatUnits(response.reserveA, tokenA.decimals),
+        formatUnits(response.reserveB, tokenB.decimals)
+      );
+    } // setOutAmount(_getAmount);
   };
 
   /// Exact Amount in , user give 1st input
@@ -224,14 +237,14 @@ export default function Swap() {
   ) => {
     if (amountA != 0) {
       const amountOut = await routerContract?.call("getAmountOut", [
-        parseEther(amountA.toString()),
-        parseEther(reserveA.toString()),
-        parseEther(reserveB.toString()),
+        parseUnits(amountA.toString(), selectedToken1.decimals),
+        parseUnits(reserveA.toString(), selectedToken1.decimals),
+        parseUnits(reserveB.toString(), selectedToken2.decimals),
       ]);
 
-      console.log(formatEther(amountOut));
-      setAmountOut(Number(formatEther(amountOut)));
-      setAmountTwo(Number(formatEther(amountOut)));
+      console.log(formatUnits(amountOut, selectedToken2.decimals));
+      // setAmountOut(Number(formatEther(amountOut)));
+      setAmountTwo(Number(formatUnits(amountOut, selectedToken2.decimals)));
     }
   };
 
@@ -243,14 +256,14 @@ export default function Swap() {
   ) => {
     if (amountB != 0) {
       const amountIn = await routerContract?.call("getAmountIn", [
-        parseEther(amountB.toString()),
-        parseEther(reserveA.toString()),
-        parseEther(reserveB.toString()),
+        parseUnits(amountB.toString(), selectedToken2.decimals),
+        parseUnits(reserveA.toString(), selectedToken1.decimals),
+        parseUnits(reserveB.toString(), selectedToken2.decimals),
       ]);
+      console.log(formatUnits(amountIn, selectedToken1.decimals));
 
-      console.log(formatEther(amountIn));
-      setAmountIn(Number(formatEther(amountIn)));
-      setAmountOne(Number(formatEther(amountIn)));
+      // setAmountIn(Number(formatEther(amountIn)));
+      setAmountOne(Number(formatUnits(amountIn, selectedToken1.decimals)));
     }
   };
 
@@ -260,9 +273,59 @@ export default function Swap() {
       selectedToken2 != undefined &&
       selectedToken1 != selectedToken2
     ) {
-      getReserves(selectedToken1.address, selectedToken2.address);
+      getReserves(selectedToken1, selectedToken2);
     }
   }, [selectedToken1, selectedToken2]);
 
-  return <div>Swap</div>;
+  return (
+    <div className="flex flex-col justify-center items-center">
+      Swap
+      <div className="flex flex-col items-center">
+        <ConnectWallet
+          className=" "
+          style={{ padding: "20px 0px", fontSize: "18px", width: "100%" }}
+          theme="dark"
+        />
+        <div>
+          {selectedToken1 && selectedToken1.name}
+          <br />
+          <input
+            type="number"
+            value={amountOne}
+            className="text-gray-200 outline-double"
+            onChange={(e) => {
+              setAmountOne(Number(e.target.value));
+              getAmountOut(Number(e.target.value), reserveA, reserveB);
+              setExactAmountIn(true);
+            }}
+          ></input>
+          <br />
+        </div>
+        <br />
+        <div>
+          {selectedToken2 && selectedToken2.name}
+          <br />
+          <input
+            type="number"
+            value={amountTwo}
+            className="text-gray-200 outline-double"
+            onChange={(e) => {
+              setAmountTwo(Number(e.target.value));
+              getAmountIn(Number(e.target.value), reserveA, reserveB);
+              setExactAmountOut(true);
+            }}
+          ></input>
+          <br />
+        </div>
+        <div>
+          <button
+            className="text-white font-semibold bg-[#8a4fc5]"
+            onClick={handleSubmit}
+          >
+            Swap
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
