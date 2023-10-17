@@ -8,6 +8,7 @@ import {
 import { formatEther, parseEther } from "ethers/lib/utils";
 import { tokens } from "@/const/tokens";
 import {
+  ConnectWallet,
   useAddress,
   useContract,
   useContractWrite,
@@ -17,11 +18,11 @@ import { TokenPairType } from "@/const/pair";
 
 export default function Pool() {
   const [selectedToken1, setSelectedToken1] = useState(tokens[0]);
-  const [selectedToken2, setSelectedToken2] = useState(tokens[0]);
+  const [selectedToken2, setSelectedToken2] = useState(tokens[1]);
   const [desiredAmountA, setDesiredAmountA] = useState(0);
   const [desiredAmountB, setDesiredAmountB] = useState(0);
 
-  const [liquidity, setLiquidity] = useState();
+  const [liquidity, setLiquidity] = useState(0);
   const [positions, setPositions] = useState();
 
   const [reserveA, setReserveA] = useState(0);
@@ -40,7 +41,22 @@ export default function Pool() {
   //     "approve"
   //   );
 
-  const handleLiquidity = () => {};
+  const handleAddLiquidity = () => {
+    if (selectedToken1 != selectedToken2 && selectedToken1 && selectedToken2) {
+      if (selectedToken1.isNative) {
+        addLiquidityETH(desiredAmountB, desiredAmountA, selectedToken2.address);
+      } else if (selectedToken2.isNative) {
+        addLiquidityETH(desiredAmountA, desiredAmountB, selectedToken1.address);
+      } else {
+        addLiquidity(
+          desiredAmountA,
+          desiredAmountB,
+          selectedToken1.address,
+          selectedToken2.address
+        );
+      }
+    }
+  };
 
   const getDeadline = () => {
     const _deadline = Math.floor(Date.now() / 1000) + 900;
@@ -171,6 +187,22 @@ export default function Pool() {
     return liqAmount;
   };
 
+  const handleRemoveLiquidity = () => {
+    if (selectedToken1 != selectedToken2 && selectedToken1 && selectedToken2) {
+      if (selectedToken1.isNative) {
+        removeLiquidityETH(liquidity, selectedToken2.address);
+      } else if (selectedToken2.isNative) {
+        removeLiquidityETH(liquidity, selectedToken1.address);
+      } else {
+        removeLiquidity(
+          selectedToken1.address,
+          selectedToken2.address,
+          liquidity
+        );
+      }
+    }
+  };
+
   const removeLiquidity = async (
     addressTokenA: `0x${string}`,
     addressTokenB: `0x${string}`,
@@ -240,8 +272,8 @@ export default function Pool() {
   // 3 params on this one
   const quoteB = async (
     amountA: number,
-    reserveA: `0x${string}`,
-    reserveB: `0x${string}`
+    reserveA: number,
+    reserveB: number
   ) => {
     try {
       if (amountA) {
@@ -262,8 +294,8 @@ export default function Pool() {
 
   const quoteA = async (
     amountB: number,
-    reserveA: `0x${string}`,
-    reserveB: `0x${string}`
+    reserveA: number,
+    reserveB: number
   ) => {
     try {
       if (amountB) {
@@ -292,5 +324,59 @@ export default function Pool() {
     }
   }, [selectedToken1, selectedToken2]);
 
-  return <div>pool</div>;
+  // useEffect(() => {
+  //   if (!positions) {
+  //     getPositions();
+  //   }
+
+  //   console.log(positions);
+  // }, []);
+
+  return (
+    <div className="flex flex-col justify-center items-center">
+      pool
+      <div className="flex flex-col items-center">
+        <ConnectWallet
+          className=" "
+          style={{ padding: "20px 0px", fontSize: "18px", width: "100%" }}
+          theme="dark"
+        />
+        <div>
+          {selectedToken1 && selectedToken1.name}
+          <br />
+          <input
+            type="number"
+            className="text-gray-200 outline-double"
+            onChange={(e) => {
+              setDesiredAmountA(Number(e.target.value));
+              quoteB(Number(e.target.value), reserveA, reserveB);
+            }}
+          ></input>
+          <br />
+        </div>
+        <br />
+        <div>
+          {selectedToken2 && selectedToken2.name}
+          <br />
+          <input
+            type="number"
+            className="text-gray-200 outline-double"
+            onChange={(e) => {
+              setDesiredAmountB(Number(e.target.value));
+              quoteA(Number(e.target.value), reserveA, reserveB);
+            }}
+          ></input>
+          <br />
+        </div>
+        <div>
+          <button
+            className="text-white font-semibold bg-[#8a4fc5]"
+            onClick={handleAddLiquidity}
+          >
+            handle Liquidity
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
