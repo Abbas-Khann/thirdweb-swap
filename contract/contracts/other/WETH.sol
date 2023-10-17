@@ -2,29 +2,36 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 
-// Only the bridge manager can call the function here , which will be approved by the users
+// import {IWETH} from "../interfaces/IWETH.sol";
 
-contract WETH is ERC20, Ownable {
-    address public approved;
+contract WETH is ERC20 {
+    event Deposit(address indexed account, uint256 _amount);
+    event Withdrawl(address indexed account, uint256 _amount);
 
-    constructor() ERC20("Wrapped Ether", "WETH") {}
+    constructor() ERC20("Wrapped ETH", "WETH") {}
 
-    modifier onlyApproved() {
-        require(msg.sender == approved, "Not Authorised");
-        _;
+    /// @dev Function to deposit ETH and mint Wrapped ether
+    function deposit() external payable {
+        _mint(msg.sender, msg.value);
+        emit Deposit(msg.sender, msg.value);
     }
 
-    function mint(address to, uint256 amount) public onlyApproved {
-        _mint(to, amount);
+    /// to withdraw the ether wrapped and burn the tokens
+    function withdraw(uint256 amount) external {
+        require(balanceOf(msg.sender) >= amount, "Amount is invalid");
+        _burn(msg.sender, amount);
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Withdraw not completed");
+        emit Withdrawl(msg.sender, amount);
     }
 
-    function burn(address to, uint256 amount) public onlyApproved {
-        _burn(to, amount);
+    /// @dev Function to receive Ether. msg.data must be empty
+    receive() external payable {
+        _mint(msg.sender, msg.value);
+        emit Deposit(msg.sender, msg.value);
     }
 
-    function setApproved(address _approved) public onlyOwner {
-        approved = _approved;
-    }
+    /// @dev Fallback function is called when msg.data is not empty
+    fallback() external payable {}
 }
