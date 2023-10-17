@@ -65,19 +65,26 @@ export default function Swap() {
   //     "swapExactTokensForTokens"
   //   );
 
-  const approveToken = async (tokenAddress: `0x${string}`, amount: number) => {
+  const approveToken = async (token: TokenType, amount: number) => {
     try {
-      const contract = await sdk?.getContract(tokenAddress);
-      const tx = await contract?.call("approve", [
+      const contract = await sdk?.getContract(token.address);
+      const data = await contract?.call("allowance", [
+        address,
         SWAP_ROUTER_ADDRESS,
-        parseEther(amount.toString()),
       ]);
-      console.log(tx);
+      const approvedAmount = formatUnits(data, token.decimals);
+
+      if (approvedAmount <= amount.toString()) {
+        const tx = await contract?.call("approve", [
+          SWAP_ROUTER_ADDRESS,
+          parseUnits(amount.toString(), token.decimals),
+        ]);
+        console.log(tx);
+      }
     } catch (error) {
       console.log(error);
     }
   };
-
   const getDeadline = () => {
     const _deadline = Math.floor(Date.now() / 1000) + 600;
     console.log(_deadline);
@@ -114,12 +121,12 @@ export default function Swap() {
     valueOutMin: number,
     path: `0x${string}`[]
   ) => {
-    await approveToken(path[0], valueIn);
+    await approveToken(selectedToken1, valueIn);
     const deadline = getDeadline();
 
     const tx = await routerContract?.call("swapExactTokensForTokens", [
-      parseEther(valueIn.toString()),
-      parseEther(valueOutMin.toString()),
+      parseUnits(valueIn.toString(), selectedToken1.decimals),
+      parseUnits(valueOutMin.toString(), selectedToken2.decimals),
       path,
       address,
       deadline,
@@ -132,12 +139,13 @@ export default function Swap() {
     valueInMax: number,
     path: `0x${string}`[]
   ) => {
-    await approveToken(path[0], valueInMax);
+    await approveToken(selectedToken1, valueInMax);
     const deadline = getDeadline();
 
     const tx = await routerContract?.call("swapTokensForExactTokens", [
-      parseEther(valueOut.toString()),
-      parseEther(valueInMax.toString()),
+      parseUnits(valueOut.toString(), selectedToken2.decimals),
+      parseUnits(valueInMax.toString(), selectedToken1.decimals),
+
       path,
       address,
       deadline,
@@ -155,7 +163,12 @@ export default function Swap() {
 
     const tx = await routerContract?.call(
       "swapETHForExactTokens",
-      [parseEther(valueOut.toString()), path, address, deadline],
+      [
+        parseUnits(valueOut.toString(), selectedToken2.decimals),
+        path,
+        address,
+        deadline,
+      ],
       { value: parseEther(valueETH.toString()) }
     );
     console.log(tx);
@@ -170,7 +183,12 @@ export default function Swap() {
 
     const tx = await routerContract?.call(
       "swapExactETHForTokens",
-      [parseEther(valueOutMin.toString()), path, address, deadline],
+      [
+        parseUnits(valueOutMin.toString(), selectedToken2.decimals),
+        path,
+        address,
+        deadline,
+      ],
       { value: parseEther(valueIn.toString()) }
     );
     console.log(tx);
@@ -181,12 +199,12 @@ export default function Swap() {
     path: `0x${string}`[],
     valueOutMin: number
   ) => {
-    await approveToken(path[0], valueIn);
+    await approveToken(selectedToken1, valueIn);
     const deadline = getDeadline();
 
     const tx = await routerContract?.call("swapExactTokensForETH", [
-      parseEther(valueIn.toString()),
-      parseEther(valueOutMin.toString()),
+      parseUnits(valueIn.toString(), selectedToken1.decimals),
+      parseUnits(valueOutMin.toString(), selectedToken2.decimals),
       path,
       address,
       deadline,
@@ -200,12 +218,12 @@ export default function Swap() {
     valueIn: number
   ) => {
     // approve tokens to be sent
-    await approveToken(path[0], valueIn);
+    await approveToken(selectedToken1, valueIn);
     const deadline = getDeadline();
 
     const tx = await routerContract?.call("swapTokensForExactETH", [
-      parseEther(valueOut.toString()),
-      parseEther(valueIn.toString()),
+      parseUnits(valueOut.toString(), selectedToken2.decimals),
+      parseUnits(valueIn.toString(), selectedToken1.decimals),
       path,
       address,
       deadline,
