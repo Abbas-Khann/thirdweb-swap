@@ -66,6 +66,14 @@
     {
       "address": "0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0",
       "chainId": 11155111
+    },
+    {
+      "address": "0xbD97464cbfAb43c030Cdd6428ED70E5036Bb77F4",
+      "chainId": 11155111
+    },
+    {
+      "address": "0x7853e2642a084Dd60B9c1F73F3Ba3bdcb8B36856",
+      "chainId": 11155111
     }
   ]
 }

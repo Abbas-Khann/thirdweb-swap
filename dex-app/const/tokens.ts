@@ -12,7 +12,7 @@ export const tokens: TokenType[] = [
     name: "eth",
     symbol: "ETH",
     isNative: true,
-    address: "0x3C8f3a39529Ba226eba9316cc7bA2D3bF0f80133",
+    address: "0x7853e2642a084Dd60B9c1F73F3Ba3bdcb8B36856",
     logo: "",
     decimals: 18,
   },

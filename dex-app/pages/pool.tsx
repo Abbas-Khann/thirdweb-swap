@@ -5,8 +5,13 @@ import {
   TOKEN_ADDRESS,
   WETH_ADDRESS,
 } from "@/const/details";
-import { formatEther, parseEther } from "ethers/lib/utils";
-import { tokens } from "@/const/tokens";
+import {
+  formatEther,
+  formatUnits,
+  parseEther,
+  parseUnits,
+} from "ethers/lib/utils";
+import { TokenType, tokens } from "@/const/tokens";
 import {
   ConnectWallet,
   useAddress,
@@ -14,16 +19,16 @@ import {
   useContractWrite,
   useSDK,
 } from "@thirdweb-dev/react";
-import { TokenPairType } from "@/const/pair";
+import { PositionType, TokenPairType, tokenpairs } from "@/const/pair";
 
 export default function Pool() {
-  const [selectedToken1, setSelectedToken1] = useState(tokens[0]);
-  const [selectedToken2, setSelectedToken2] = useState(tokens[1]);
+  const [selectedToken1, setSelectedToken1] = useState(tokens[1]);
+  const [selectedToken2, setSelectedToken2] = useState(tokens[2]);
   const [desiredAmountA, setDesiredAmountA] = useState(0);
   const [desiredAmountB, setDesiredAmountB] = useState(0);
 
   const [liquidity, setLiquidity] = useState(0);
-  const [positions, setPositions] = useState();
+  const [positions, setPositions] = useState<PositionType[]>();
 
   const [reserveA, setReserveA] = useState(0);
   const [reserveB, setReserveB] = useState(0);
@@ -44,15 +49,15 @@ export default function Pool() {
   const handleAddLiquidity = () => {
     if (selectedToken1 != selectedToken2 && selectedToken1 && selectedToken2) {
       if (selectedToken1.isNative) {
-        addLiquidityETH(desiredAmountB, desiredAmountA, selectedToken2.address);
+        addLiquidityETH(desiredAmountB, desiredAmountA, selectedToken2);
       } else if (selectedToken2.isNative) {
-        addLiquidityETH(desiredAmountA, desiredAmountB, selectedToken1.address);
+        addLiquidityETH(desiredAmountA, desiredAmountB, selectedToken1);
       } else {
         addLiquidity(
           desiredAmountA,
           desiredAmountB,
-          selectedToken1.address,
-          selectedToken2.address
+          selectedToken1,
+          selectedToken2
         );
       }
     }
@@ -64,14 +69,22 @@ export default function Pool() {
     return _deadline;
   };
 
-  const approveToken = async (tokenAddress: `0x${string}`, amount: number) => {
+  const approveToken = async (token: TokenType, amount: number) => {
     try {
-      const contract = await sdk?.getContract(tokenAddress);
-      const tx = await contract?.call("approve", [
+      const contract = await sdk?.getContract(token.address);
+      const data = await contract?.call("allowance", [
+        address,
         SWAP_ROUTER_ADDRESS,
-        parseEther(amount.toString()),
       ]);
-      console.log(tx);
+      const approvedAmount = formatUnits(data, token.decimals);
+
+      if (approvedAmount <= amount.toString()) {
+        const tx = await contract?.call("approve", [
+          SWAP_ROUTER_ADDRESS,
+          parseUnits(amount.toString(), token.decimals),
+        ]);
+        console.log(tx);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -80,20 +93,20 @@ export default function Pool() {
   const addLiquidity = async (
     valueOne: number,
     valueTwo: number,
-    addressTokenA: `0x${string}`,
-    addressTokenB: `0x${string}`
+    tokenA: TokenType,
+    tokenB: TokenType
   ) => {
     try {
-      if (addressTokenA && addressTokenB && valueOne && valueTwo && address) {
-        await approveToken(addressTokenA, valueOne);
-        await approveToken(addressTokenB, valueTwo);
+      if (tokenA && tokenB && valueOne && valueTwo && address) {
+        await approveToken(tokenA, valueOne);
+        await approveToken(tokenB, valueTwo);
 
         const _deadline = getDeadline();
         const _addLiquidity = await routerContract?.call("addLiquidity", [
-          addressTokenA,
-          addressTokenB,
-          parseEther(valueOne.toString()),
-          parseEther(valueTwo.toString()),
+          tokenA.address,
+          tokenB.address,
+          parseUnits(valueOne.toString(), tokenA.decimals),
+          parseUnits(valueTwo.toString(), tokenB.decimals),
           1,
           1,
           address,
@@ -115,18 +128,18 @@ export default function Pool() {
   const addLiquidityETH = async (
     valueToken: number,
     valueETH: number,
-    addressToken: `0x${string}`
+    token: TokenType
   ) => {
     try {
-      if (addressToken && valueToken && valueETH && address) {
-        await approveToken(addressToken, valueToken);
+      if (token && valueToken && valueETH && address) {
+        await approveToken(token, valueToken);
 
         const _deadline = getDeadline();
         const _addLiquidity = await routerContract?.call(
-          "addLiquidity",
+          "addLiquidityETH",
           [
-            addressToken,
-            parseEther(valueToken.toString()),
+            token.address,
+            parseUnits(valueToken.toString(), token.decimals),
             1,
             1,
             address,
@@ -145,49 +158,40 @@ export default function Pool() {
     }
   };
 
-  //   const getPositions = async () => {
-  //     try {
-  //       const promises = [];
+  const getPositions = async () => {
+    try {
+      let promises: PositionType[] = [];
+      const totalTokensPairs = tokenpairs.length;
+      for (let i = 0; i < totalTokensPairs; i++) {
+        const balance = await getLiquidity(
+          tokenpairs[i].token1,
+          tokenpairs[i].token2
+        );
+        promises.push({ ...tokenpairs[i], liquidtyAmount: Number(balance) });
+      }
+      const _positions = await Promise.all(promises);
+      console.log(_positions);
+      setPositions(_positions);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-  //       for (let i = 0; i < 3; i++) {
-
-  //         const tokenPair: TokenPairType = {
-  //             token1: selectedToken1,
-  //             token2:selectedToken2,
-  //             pair: "0x1904C6Ff3DE8Cfb37488ED904C0577d0a3E7A515",
-  //             balance: 0
-  //           }
-
-  //         const balance = getLiquidity(
-  //           tokenpairs[i].token1,
-  //           tokenpairs[i].token2
-  //         );
-  //         promises.push({ ...tokenpairs[i], balance });
-  //       }
-
-  //       const _positions = await Promise.all(promises);
-  //       console.log(_positions);
-  //       setPositions(_positions);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-
-  const getLiquidity = async (
-    addressTokenA: `0x${string}`,
-    addressTokenB: `0x${string}`
-  ) => {
+  const getLiquidity = async (tokenA: TokenType, tokenB: TokenType) => {
     const _liquidity = await routerContract?.call("getLiquidityAmount", [
       address,
-      addressTokenA,
-      addressTokenB,
+      tokenA.address,
+      tokenB.address,
     ]);
     const liqAmount = formatEther(_liquidity.toString());
     console.log(liqAmount);
     return liqAmount;
   };
 
-  const handleRemoveLiquidity = () => {
+  const handleRemoveLiquidity = (
+    selectedToken1: TokenType,
+    selectedToken2: TokenType
+  ) => {
     if (selectedToken1 != selectedToken2 && selectedToken1 && selectedToken2) {
       if (selectedToken1.isNative) {
         removeLiquidityETH(liquidity, selectedToken2.address);
@@ -263,9 +267,14 @@ export default function Pool() {
 
   const getReserves = async (tokenA: `0x${string}`, tokenB: `0x${string}`) => {
     const response = await routerContract?.call("getReserve", [tokenA, tokenB]);
-    setReserveA(Number(formatEther(response.reserveA)));
-    setReserveB(Number(formatEther(response.reserveB)));
-    console.log(formatEther(response.reserveA), formatEther(response.reserveB));
+    if (response) {
+      setReserveA(Number(formatEther(response.reserveA)));
+      setReserveB(Number(formatEther(response.reserveB)));
+      console.log(
+        formatEther(response.reserveA),
+        formatEther(response.reserveB)
+      );
+    }
     // setOutAmount(_getAmount);
   };
 
@@ -318,19 +327,20 @@ export default function Pool() {
     if (
       selectedToken1 != undefined &&
       selectedToken2 != undefined &&
-      selectedToken1 != selectedToken2
+      selectedToken1 != selectedToken2 &&
+      address
     ) {
       getReserves(selectedToken1.address, selectedToken2.address);
     }
   }, [selectedToken1, selectedToken2]);
 
-  // useEffect(() => {
-  //   if (!positions) {
-  //     getPositions();
-  //   }
+  useEffect(() => {
+    if (!positions) {
+      getPositions();
+    }
 
-  //   console.log(positions);
-  // }, []);
+    console.log(positions);
+  }, []);
 
   return (
     <div className="flex flex-col justify-center items-center">
@@ -377,6 +387,44 @@ export default function Pool() {
           </button>
         </div>
       </div>
+      {/* <div className="flex flex-col items-center">
+       
+        <div>
+          {selectedToken1 && selectedToken1.name}
+          <br />
+          <input
+            type="number"
+            className="text-gray-200 outline-double"
+            onChange={(e) => {
+              setDesiredAmountA(Number(e.target.value));
+              quoteB(Number(e.target.value), reserveA, reserveB);
+            }}
+          ></input>
+          <br />
+        </div>
+        <br />
+        <div>
+          {selectedToken2 && selectedToken2.name}
+          <br />
+          <input
+            type="number"
+            className="text-gray-200 outline-double"
+            onChange={(e) => {
+              setDesiredAmountB(Number(e.target.value));
+              quoteA(Number(e.target.value), reserveA, reserveB);
+            }}
+          ></input>
+          <br />
+        </div>
+        <div>
+          <button
+            className="text-white font-semibold bg-[#8a4fc5]"
+            onClick={handleAddLiquidity}
+          >
+            handle Liquidity
+          </button>
+        </div>
+      </div> */}
     </div>
   );
 }

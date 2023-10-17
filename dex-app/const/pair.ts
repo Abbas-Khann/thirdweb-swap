@@ -19,3 +19,9 @@ export const tokenpairs: TokenPairType[] = [
     token2: tokens[2],
   },
 ];
+
+export interface PositionType {
+  token1: TokenType;
+  token2: TokenType;
+  liquidtyAmount: number;
+}
