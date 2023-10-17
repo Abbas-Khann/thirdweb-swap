@@ -16,7 +16,7 @@ import {
   WETH_ADDRESS,
 } from "@/const/details";
 
-export default function stake() {
+export default function Stake() {
   //   const [selectedToken, setSelectedToken] = useState(tokens[0]);
   const [inputAmount, setInputAmount] = useState(0);
   const [withdrawAmount, setWithdrawAmount] = useState(0);

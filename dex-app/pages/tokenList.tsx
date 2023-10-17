@@ -12,7 +12,7 @@ import React from "react";
 import { POOL_DATA_PROVIDER_ADDRESS } from "@/const/details";
 import { ReserveDataType, loanTokens } from "@/const/tokens";
 
-const tokenList = () => {
+export default function TokenList() {
   const [assetsInfo, setAssetsInfo] = useState<ReserveDataType[]>();
   const address = useAddress();
   const sdk = useSDK();
@@ -84,6 +84,4 @@ const tokenList = () => {
   };
 
   return <div>tokenList</div>;
-};
-
-export default tokenList;
+}

@@ -15,7 +15,7 @@ import {
 } from "@thirdweb-dev/react";
 import { TokenPairType } from "@/const/pair";
 
-export default function pool() {
+export default function Pool() {
   const [selectedToken1, setSelectedToken1] = useState(tokens[0]);
   const [selectedToken2, setSelectedToken2] = useState(tokens[0]);
   const [desiredAmountA, setDesiredAmountA] = useState(0);
