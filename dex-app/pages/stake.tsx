@@ -3,11 +3,13 @@ import { useEffect, useState } from "react";
 import { formatEther, parseEther } from "ethers/lib/utils";
 // import { tokens } from "@/const/tokens";
 import {
+  ConnectWallet,
   useAddress,
   useContract,
   useContractRead,
   useContractWrite,
   useSDK,
+  useTokenBalance,
 } from "@thirdweb-dev/react";
 import {
   REWARD_TOKEN,
@@ -21,11 +23,6 @@ export default function Stake() {
   const [inputAmount, setInputAmount] = useState(0);
   const [withdrawAmount, setWithdrawAmount] = useState(0);
   const [loading, setLoading] = useState(false);
-
-  //   const [balance, setBalance] = useState(0);
-  //   const [earnedRewards, setEarnedRewards] = useState(0);
-  //   const [stakedAmount, setStakedAmount] = useState(0);
-
   const address = useAddress();
   const sdk = useSDK();
   const { contract: stakingTokenContract } = useContract(
@@ -35,10 +32,9 @@ export default function Stake() {
   const { contract: rewardTokenContract } = useContract(REWARD_TOKEN, "token");
   const { contract: wethContract } = useContract(WETH_ADDRESS, "custom");
   const { contract: stakingContract } = useContract(STAKING_ADDRESS, "custom");
-  const { data: stakingTokenBalance } = useContractRead(
+  const { data: stakingTokenBalance } = useTokenBalance(
     stakingTokenContract,
-    "balanceOf",
-    [address]
+    address
   );
 
   // this will have both total staked Tokens & rewards earned
@@ -52,6 +48,17 @@ export default function Stake() {
     stakingTokenContract,
     "approve"
   );
+
+  useEffect(() => {
+    if (address) {
+      console.log(stakingInfo);
+      console.log(stakingTokenBalance);
+      if (stakingInfo) {
+        console.log(formatEther(stakingInfo._rewards.toString()));
+        console.log(formatEther(stakingInfo._tokensStaked.toString()));
+      }
+    }
+  }, [address]);
 
   //   const approveToken = async (tokenAddress: `0x${string}`, amount: number) => {
   //     try {
@@ -117,5 +124,53 @@ export default function Stake() {
     }
   };
 
-  return <div>stake</div>;
+  return (
+    <div className="flex flex-col justify-center items-center">
+      stake
+      <div className="flex flex-col items-center">
+        <ConnectWallet
+          className=" "
+          style={{ padding: "20px 0px", fontSize: "18px", width: "100%" }}
+          theme="dark"
+        />
+        <div>
+          <input
+            className="text-gray-200 outline-double"
+            onChange={(e) => setInputAmount(Number(e.target.value))}
+          ></input>
+          <br />
+          <button
+            className="text-white font-semibold bg-[#8a4fc5]"
+            onClick={stakeTokens}
+          >
+            Supply
+          </button>
+        </div>
+        <br />
+        <div>
+          <input
+            className="text-gray-200 outline-double"
+            onChange={(e) => setWithdrawAmount(Number(e.target.value))}
+          ></input>
+          <br />
+          <button
+            className="text-white font-semibold bg-[#8a4fc5]"
+            onClick={withdraw}
+          >
+            Withdraw
+          </button>
+        </div>
+        <br />
+        <div>
+          <br />
+          <button
+            className="text-white font-semibold bg-[#8a4fc5]"
+            onClick={redeemRewards}
+          >
+            Reedem
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
