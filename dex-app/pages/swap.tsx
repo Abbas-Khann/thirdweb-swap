@@ -40,7 +40,7 @@ export default function Swap() {
   const [exactAmountOut, setExactAmountOut] = useState<boolean>(false);
 
   // const { contract: tokenContract } = useContract(TOKEN_ADDRESS, "token");
-  const { contract: wethContract } = useContract(WETH_ADDRESS, "weth");
+  const { contract: wethContract } = useContract(WETH_ADDRESS, "custom");
   const { contract: routerContract } = useContract(
     SWAP_ROUTER_ADDRESS,
     "custom"

@@ -20,10 +20,11 @@ import {
   useSDK,
 } from "@thirdweb-dev/react";
 import { PositionType, TokenPairType, tokenpairs } from "@/const/pair";
+import { Console } from "console";
 
 export default function Pool() {
-  const [selectedToken1, setSelectedToken1] = useState(tokens[1]);
-  const [selectedToken2, setSelectedToken2] = useState(tokens[2]);
+  const [selectedToken1, setSelectedToken1] = useState(tokens[0]);
+  const [selectedToken2, setSelectedToken2] = useState(tokens[1]);
   const [desiredAmountA, setDesiredAmountA] = useState(0);
   const [desiredAmountB, setDesiredAmountB] = useState(0);
 
@@ -36,7 +37,7 @@ export default function Pool() {
   const address = useAddress();
   const sdk = useSDK();
   const { contract: tokenContract } = useContract(TOKEN_ADDRESS, "token");
-  const { contract: wethContract } = useContract(WETH_ADDRESS, "weth");
+  const { contract: wethContract } = useContract(WETH_ADDRESS, "custom");
   const { contract: routerContract } = useContract(
     SWAP_ROUTER_ADDRESS,
     "custom"
@@ -178,14 +179,17 @@ export default function Pool() {
   };
 
   const getLiquidity = async (tokenA: TokenType, tokenB: TokenType) => {
-    const _liquidity = await routerContract?.call("getLiquidityAmount", [
-      address,
-      tokenA.address,
-      tokenB.address,
-    ]);
-    const liqAmount = formatEther(_liquidity.toString());
-    console.log(liqAmount);
-    return liqAmount;
+    try {
+      console.log(address, tokenA.address, tokenB.address);
+      const _liquidity = await routerContract?.call("getLiquidityAmount", [
+        address,
+        tokenA.address,
+        tokenB.address,
+      ]);
+      const liqAmount = formatUnits(_liquidity.toString(), 6);
+      console.log(liqAmount);
+      return liqAmount;
+    } catch (error) {}
   };
 
   const handleRemoveLiquidity = (
@@ -218,7 +222,7 @@ export default function Pool() {
         const _removeLiquidity = await routerContract?.call("removeLiquidity", [
           addressTokenA,
           addressTokenB,
-          parseEther(liquidityAmount.toString()),
+          parseUnits(liquidityAmount.toString(), 6),
           1,
           1,
           address,
@@ -247,7 +251,7 @@ export default function Pool() {
           "removeLiquidityETH",
           [
             addressTokenA,
-            parseEther(liquidityAmount.toString()),
+            parseUnits(liquidityAmount.toString(), 6),
             1,
             1,
             address,
@@ -265,14 +269,17 @@ export default function Pool() {
     }
   };
 
-  const getReserves = async (tokenA: `0x${string}`, tokenB: `0x${string}`) => {
-    const response = await routerContract?.call("getReserve", [tokenA, tokenB]);
+  const getReserves = async (tokenA: TokenType, tokenB: TokenType) => {
+    const response = await routerContract?.call("getReserve", [
+      tokenA.address,
+      tokenB.address,
+    ]);
     if (response) {
-      setReserveA(Number(formatEther(response.reserveA)));
-      setReserveB(Number(formatEther(response.reserveB)));
+      setReserveA(Number(formatUnits(response.reserveA, tokenA.decimals)));
+      setReserveB(Number(formatUnits(response.reserveB, tokenB.decimals)));
       console.log(
-        formatEther(response.reserveA),
-        formatEther(response.reserveB)
+        formatUnits(response.reserveA, tokenA.decimals),
+        formatUnits(response.reserveB, tokenB.decimals)
       );
     }
     // setOutAmount(_getAmount);
@@ -287,13 +294,15 @@ export default function Pool() {
     try {
       if (amountA) {
         const _fetchQuote = await routerContract?.call("quote", [
-          parseEther(amountA.toString()),
-          parseEther(reserveA.toString()),
-          parseEther(reserveB.toString()),
+          parseUnits(amountA.toString(), selectedToken1.decimals),
+          parseUnits(reserveA.toString(), selectedToken1.decimals),
+          parseUnits(reserveB.toString(), selectedToken2.decimals),
         ]);
-        console.log(formatEther(_fetchQuote));
+        console.log(formatUnits(_fetchQuote, selectedToken2.decimals));
         // setQuote(_fetchQuote);
-        setDesiredAmountB(Number(formatEther(_fetchQuote)));
+        setDesiredAmountB(
+          Number(formatUnits(_fetchQuote, selectedToken2.decimals))
+        );
       }
     } catch (err) {
       // toast.error(err.reason);
@@ -309,13 +318,15 @@ export default function Pool() {
     try {
       if (amountB) {
         const _fetchQuote = await routerContract?.call("quote", [
-          parseEther(amountB.toString()),
-          parseEther(reserveB.toString()),
-          parseEther(reserveA.toString()),
+          parseUnits(amountB.toString(), selectedToken2.decimals),
+          parseUnits(reserveB.toString(), selectedToken2.decimals),
+          parseUnits(reserveA.toString(), selectedToken1.decimals),
         ]);
-        console.log(formatEther(_fetchQuote));
+        console.log(formatUnits(_fetchQuote, selectedToken1.decimals));
         // setQuote(_fetchQuote);
-        setDesiredAmountA(Number(formatEther(_fetchQuote)));
+        setDesiredAmountA(
+          Number(formatUnits(_fetchQuote, selectedToken1.decimals))
+        );
       }
     } catch (err) {
       // toast.error(err.reason);
@@ -330,17 +341,17 @@ export default function Pool() {
       selectedToken1 != selectedToken2 &&
       address
     ) {
-      getReserves(selectedToken1.address, selectedToken2.address);
+      if (!reserveA && !reserveB) {
+        getReserves(selectedToken1, selectedToken2);
+      }
     }
   }, [selectedToken1, selectedToken2]);
 
   useEffect(() => {
-    if (!positions) {
+    if (address) {
       getPositions();
     }
-
-    console.log(positions);
-  }, []);
+  }, [address]);
 
   return (
     <div className="flex flex-col justify-center items-center">
@@ -356,6 +367,7 @@ export default function Pool() {
           <br />
           <input
             type="number"
+            value={desiredAmountA}
             className="text-gray-200 outline-double"
             onChange={(e) => {
               setDesiredAmountA(Number(e.target.value));
@@ -370,6 +382,7 @@ export default function Pool() {
           <br />
           <input
             type="number"
+            value={desiredAmountB}
             className="text-gray-200 outline-double"
             onChange={(e) => {
               setDesiredAmountB(Number(e.target.value));
@@ -383,48 +396,41 @@ export default function Pool() {
             className="text-white font-semibold bg-[#8a4fc5]"
             onClick={handleAddLiquidity}
           >
-            handle Liquidity
+            Add Liquidity & create Pair
           </button>
         </div>
       </div>
-      {/* <div className="flex flex-col items-center">
-       
-        <div>
-          {selectedToken1 && selectedToken1.name}
-          <br />
-          <input
-            type="number"
-            className="text-gray-200 outline-double"
-            onChange={(e) => {
-              setDesiredAmountA(Number(e.target.value));
-              quoteB(Number(e.target.value), reserveA, reserveB);
-            }}
-          ></input>
-          <br />
-        </div>
-        <br />
-        <div>
-          {selectedToken2 && selectedToken2.name}
-          <br />
-          <input
-            type="number"
-            className="text-gray-200 outline-double"
-            onChange={(e) => {
-              setDesiredAmountB(Number(e.target.value));
-              quoteA(Number(e.target.value), reserveA, reserveB);
-            }}
-          ></input>
-          <br />
-        </div>
-        <div>
-          <button
-            className="text-white font-semibold bg-[#8a4fc5]"
-            onClick={handleAddLiquidity}
-          >
-            handle Liquidity
-          </button>
-        </div>
-      </div> */}
+      <div className="flex flex-col items-center">
+        {positions?.map((position) => {
+          return (
+            <>
+              <div>
+                {position && position.token1.name} -{" "}
+                {position && position.token2.name} : {position.liquidtyAmount}
+                <br />
+              </div>
+              <br />
+              <div>
+                <input
+                  type="number"
+                  className="text-gray-200 outline-double"
+                  onChange={(e) => {
+                    setLiquidity(Number(e.target.value));
+                  }}
+                ></input>
+                <button
+                  className="text-white font-semibold bg-[#8a4fc5]"
+                  onClick={() =>
+                    handleRemoveLiquidity(position.token1, position.token2)
+                  }
+                >
+                  Remove Liquidity
+                </button>
+              </div>
+            </>
+          );
+        })}
+      </div>
     </div>
   );
 }
