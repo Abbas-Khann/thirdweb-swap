@@ -45,8 +45,8 @@ export const tokens: TokenType[] = [
 export interface ReserveDataType {
   asset: `0x${string}`;
   totalSupply: number; // total Supply of aToken
-  totalStableDebt: number; // total Stable debt
-  totalVariableDebt: number; // total variable debt
+  totalDebt: number; // total Stable debt + variable debt
+  totalLiquidity: number; // total variable debt
   borrowRateStable: number; //  variable borrow rate of the reserve
   borrowRateVariable: number; // stable borrow rate of the reserve
   liquidityRate: number; // The liquidity index of the reserve

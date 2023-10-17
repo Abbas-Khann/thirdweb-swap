@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { formatEther, parseEther } from "ethers/lib/utils";
+import { formatEther, formatUnits, parseEther } from "ethers/lib/utils";
 // import { tokens } from "@/const/tokens";
 import {
   useAddress,
@@ -27,8 +27,9 @@ export default function TokenList() {
   );
 
   useEffect(() => {
-    // console.log(allReserveTokens);
-    getAllAssetInfo();
+    if (!assetsInfo) {
+      getAllAssetInfo();
+    }
   }, [allReserveTokens]);
 
   /// For all the reserve tokens , or the ones we have in collection, fetch the reserve data
@@ -37,34 +38,38 @@ export default function TokenList() {
     assetAddress: `0x${string}`
   ): Promise<ReserveDataType | undefined> => {
     try {
-      console.log(assetAddress);
+      // console.log(assetAddress);
       const reserveData = await poolDataProviderContract?.call(
         "getReserveData",
         [assetAddress]
       );
       console.log(reserveData);
-      if (reserveData) {
-        const reserveInfo: ReserveDataType = {
-          asset: assetAddress,
-          totalSupply: formatEther(reserveData.totalAToken.toString()),
-          totalStableDebt: formatEther(reserveData.totalStableDebt.toString()),
-          totalVariableDebt: formatEther(
-            reserveData.totalVariableDebt.toString()
-          ),
-          borrowRateStable: formatEther(
-            reserveData.stableBorrowRate.toString()
-          ),
-          borrowRateVariable: formatEther(
-            reserveData.variableBorrowRate.toString()
-          ),
-        };
-        console.log(reserveInfo);
-        // convert the data and set as per the Type defined
-        // define as needed for the frontend
-        // We can also get more info
-        return reserveInfo;
-      }
 
+      const _totalDebt =
+        Number(formatEther(reserveData.totalStableDebt.toString())) +
+        Number(formatEther(reserveData.totalVariableDebt.toString()));
+      const reserveInfo: ReserveDataType = {
+        asset: assetAddress,
+        totalSupply: Number(formatEther(reserveData.totalAToken.toString())),
+        totalDebt: _totalDebt,
+        totalLiquidity: Number(
+          formatEther(reserveData.liquidityIndex.toString())
+        ),
+        borrowRateStable: Number(
+          formatUnits(reserveData.stableBorrowRate.toString(), 25)
+        ),
+        borrowRateVariable: Number(
+          formatUnits(reserveData.variableBorrowRate.toString(), 25)
+        ),
+        liquidityRate: Number(
+          formatUnits(reserveData.liquidityRate.toString(), 25)
+        ),
+      };
+      console.log(reserveInfo);
+      // convert the data and set as per the Type defined
+      // define as needed for the frontend
+      // We can also get more info
+      return reserveInfo;
       // https://docs.aave.com/developers/core-contracts/pool#getreservedata
     } catch (error) {
       console.log(error);
@@ -72,15 +77,25 @@ export default function TokenList() {
   };
 
   const getAllAssetInfo = async () => {
-    let data: ReserveDataType[] = [];
-    await loanTokens.forEach(async (loanToken) => {
-      const info = await getReserveInfo(loanToken.address);
+    let promises: ReserveDataType[] = [];
+    // await loanTokens.map(async (loanToken) => {
+    //   const info = await getReserveInfo(loanToken.address);
+    //   if (info) {promises.push(info);}
+    // });
+    const totalTokens = loanTokens.length;
+    for (let id = 0; id < totalTokens; id++) {
+      const info = await getReserveInfo(loanTokens[id].address);
       if (info) {
-        data.push(info);
+        promises.push(info);
       }
-    });
-    console.log(data);
-    setAssetsInfo(data);
+    }
+
+    console.log(promises);
+    if (promises) {
+      const finalInfo = await Promise.all(promises);
+      console.log(finalInfo);
+      setAssetsInfo(finalInfo);
+    }
   };
 
   return <div>tokenList</div>;
