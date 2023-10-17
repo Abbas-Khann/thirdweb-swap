@@ -27,7 +27,7 @@ export default function TokenList() {
   );
 
   useEffect(() => {
-    if (!assetsInfo) {
+    if (!assetsInfo?.length) {
       getAllAssetInfo();
     }
   }, [allReserveTokens]);
@@ -35,10 +35,11 @@ export default function TokenList() {
   /// For all the reserve tokens , or the ones we have in collection, fetch the reserve data
 
   const getReserveInfo = async (
-    assetAddress: `0x${string}`
+    assetAddress: `0x${string}`,
+    decimal: number
   ): Promise<ReserveDataType | undefined> => {
     try {
-      // console.log(assetAddress);
+      console.log(assetAddress);
       const reserveData = await poolDataProviderContract?.call(
         "getReserveData",
         [assetAddress]
@@ -46,11 +47,13 @@ export default function TokenList() {
       console.log(reserveData);
 
       const _totalDebt =
-        Number(formatEther(reserveData.totalStableDebt.toString())) +
-        Number(formatEther(reserveData.totalVariableDebt.toString()));
+        Number(formatUnits(reserveData.totalStableDebt.toString(), decimal)) +
+        Number(formatUnits(reserveData.totalVariableDebt.toString(), decimal));
       const reserveInfo: ReserveDataType = {
         asset: assetAddress,
-        totalSupply: Number(formatEther(reserveData.totalAToken.toString())),
+        totalSupply: Number(
+          formatUnits(reserveData.totalAToken.toString(), decimal)
+        ),
         totalDebt: _totalDebt,
         totalLiquidity: Number(
           formatEther(reserveData.liquidityIndex.toString())
@@ -84,7 +87,10 @@ export default function TokenList() {
     // });
     const totalTokens = loanTokens.length;
     for (let id = 0; id < totalTokens; id++) {
-      const info = await getReserveInfo(loanTokens[id].address);
+      const info = await getReserveInfo(
+        loanTokens[id].address,
+        loanTokens[id].decimals
+      );
       if (info) {
         promises.push(info);
       }

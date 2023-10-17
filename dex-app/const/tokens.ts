@@ -78,3 +78,11 @@ export const loanTokens: TokenType[] = [
     decimals: 6,
   },
 ];
+
+export interface UserDataType {
+  tokenBalance: number;
+  totalSupplied: number; // A token balance
+  totalBorrowed: number; // Stable + borrow Rate
+  healthFactor: number; // healthFactor
+  availableToBorrow: number; //availableBorrowBase
+}

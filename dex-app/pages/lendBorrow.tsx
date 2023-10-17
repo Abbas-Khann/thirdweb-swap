@@ -17,12 +17,18 @@ import {
   useSDK,
 } from "@thirdweb-dev/react";
 import { POOL_ADDRESS, POOL_DATA_PROVIDER_ADDRESS } from "@/const/details";
-import { TokenType, loanTokens } from "@/const/tokens";
+import {
+  ReserveDataType,
+  TokenType,
+  UserDataType,
+  loanTokens,
+} from "@/const/tokens";
 import { Select } from "@chakra-ui/react";
 
 export default function LendBorrow() {
-  const [selectedToken, setSelectedToken] = useState<TokenType>(loanTokens[1]);
-  const [userBalance, setUserBalance] = useState(0);
+  const [selectedToken, setSelectedToken] = useState<TokenType>(loanTokens[0]);
+  const [userData, setUserData] = useState<UserDataType>();
+  const [tokenInfo, setTokenInfo] = useState<ReserveDataType>();
   const [lendAmount, setLendAmount] = useState(0);
   const [borrowedAmount, setBorrowedAmount] = useState(0);
 
@@ -61,18 +67,6 @@ export default function LendBorrow() {
     }
   };
 
-  const getReserveInfo = async () => {
-    try {
-      const reserveData = await poolContract?.call("getReserveData", [
-        selectedToken.address,
-      ]);
-      console.log(reserveData);
-      // https://docs.aave.com/developers/core-contracts/pool#getreservedata
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const getUserInfo = async () => {
     try {
       if (!address) {
@@ -106,10 +100,111 @@ export default function LendBorrow() {
       console.log(userAccountData);
 
       // get Balance of the Token in the wallet
-      if (sdk) {
-        const data = await sdk.wallet.balance(selectedToken.address);
-        console.log(data);
-      }
+
+      const data = await sdk?.wallet.balance(selectedToken.address);
+      console.log(data);
+
+      // respective to this token only
+      const _totalDebt =
+        Number(
+          formatUnits(
+            userData.currentStableDebt.toString(),
+            selectedToken.decimals
+          )
+        ) +
+        Number(
+          formatUnits(
+            userData.currentVariableDebt.toString(),
+            selectedToken.decimals
+          )
+        );
+      const _userData: UserDataType = {
+        tokenBalance: Number(data?.displayValue),
+        totalBorrowed: _totalDebt,
+        totalSupplied: Number(
+          formatUnits(
+            userData.currentATokenBalance.toString(),
+            selectedToken.decimals
+          )
+        ),
+        availableToBorrow: Number(
+          formatUnits(userAccountData.availableBorrowsBase.toString(), 8)
+        ),
+        healthFactor: Number(
+          formatEther(userAccountData.healthFactor.toString())
+        ),
+      };
+      console.log(_userData);
+
+      // full account stats together
+      // console.log(
+      //   "Liquidity Rate",
+      //   formatUnits(userData.liquidityRate.toString(), 25)
+      // );
+      // console.log("ltv", formatUnits(userAccountData.ltv.toString(), 7));
+      // console.log(
+      //   "Collateral Base",
+      //   formatUnits(userAccountData.totalCollateralBase.toString(), 8)
+      // );
+      // console.log(
+      //   "Debt base",
+      //   formatUnits(userAccountData.totalDebtBase.toString(), 8)
+      // );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getReserveInfo = async () => {
+    try {
+      // console.log(assetAddress);
+      const reserveData = await poolDataProviderContract?.call(
+        "getReserveData",
+        [selectedToken.address]
+      );
+      console.log(reserveData);
+
+      const _totalDebt =
+        Number(
+          formatUnits(
+            reserveData.totalStableDebt.toString(),
+            selectedToken.decimals
+          )
+        ) +
+        Number(
+          formatUnits(
+            reserveData.totalVariableDebt.toString(),
+            selectedToken.decimals
+          )
+        );
+      const reserveInfo: ReserveDataType = {
+        asset: selectedToken.address,
+        totalSupply: Number(
+          formatUnits(
+            reserveData.totalAToken.toString(),
+            selectedToken.decimals
+          )
+        ),
+        totalDebt: _totalDebt,
+        totalLiquidity: Number(
+          formatEther(reserveData.liquidityIndex.toString())
+        ),
+        borrowRateStable: Number(
+          formatUnits(reserveData.stableBorrowRate.toString(), 25)
+        ),
+        borrowRateVariable: Number(
+          formatUnits(reserveData.variableBorrowRate.toString(), 25)
+        ),
+        liquidityRate: Number(
+          formatUnits(reserveData.liquidityRate.toString(), 25)
+        ),
+      };
+      console.log(reserveInfo);
+      // convert the data and set as per the Type defined
+      // define as needed for the frontend
+      // We can also get more info
+      setTokenInfo(reserveInfo);
+      // https://docs.aave.com/developers/core-contracts/pool#getreservedata
     } catch (error) {
       console.log(error);
     }
@@ -196,7 +291,8 @@ export default function LendBorrow() {
           address,
         ]);
         // setLoading(true);
-        await txn.wait();
+        console.log(txn);
+
         // setLoading(false);
       }
     } catch (err) {
@@ -207,7 +303,7 @@ export default function LendBorrow() {
   useEffect(() => {
     if (selectedToken && address) {
       getUserReserveData();
-      // getUserInfo();
+      getReserveInfo();
     }
   }, [selectedToken && address]);
 
