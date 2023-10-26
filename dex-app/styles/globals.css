@@ -15,7 +15,19 @@ body {
   overflow-x: hidden;
 }
 
-body {}
+body {
+  /* bg-black min-h-screen bg-gradient-to-b from-[#1b1125] to-black */
+  /* background: #070707; */
+  background: linear-gradient(#1b1125, #000);
+  z-index: inherit;
+}
+
+.gradient {
+  background-image: url('../assets/gradient.png');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
 
 a {
   color: inherit;
