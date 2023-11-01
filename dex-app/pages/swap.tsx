@@ -147,9 +147,9 @@ export default function Swap() {
   return (
     // <div className=" bg-black min-h-screen bg-gradient-to-b from-[#1b1125] to-black">
     <div className="">
-      <div className=" relative flex-col w-full min-h-[80vh] flex items-center justify-center">
-        <Image src={bg} alt="bg" className=" absolute top-20 right-[25vw]" />
-        <div className=" w-[90vw] md:w-auto relative bg-[#212429] backdrop-blur-sm  bg-opacity-30 border border-slate-700 p-10 py-12  rounded-xl flex-col gap-6 flex items-center justify-center">
+      <div className=" relative  flex-col w-full min-h-[80vh] flex items-center justify-center">
+        <Image src={bg} alt="bg" className=" absolute top-20 laptop:right-[18vw] desktop:right-[25vw] " />
+        <div className=" laptop:mt-24 desktop:mt-10 w-[90vw] md:w-auto relative bg-[#212429] backdrop-blur-sm  bg-opacity-30 border border-slate-700 p-10 py-12  rounded-xl flex-col gap-6 flex items-center justify-center">
           <div className=" absolute top-4 left-10  text-gray-200 mr-auto text-2xl font-semibold">
             Swap
           </div>
