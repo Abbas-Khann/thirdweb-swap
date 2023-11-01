@@ -22,6 +22,14 @@ body {
   z-index: inherit;
 }
 
+.hero {
+  /* background: url('../assets/hero.png'), lightgray 50% / cover no-repeat; */
+  background: url('../assets/hero.png');
+  background-blend-mode: color-dodge;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 .gradient {
   background-image: url('../assets/gradient.png');
   background-repeat: no-repeat;
