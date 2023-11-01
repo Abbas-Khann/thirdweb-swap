@@ -23,10 +23,10 @@ const paths: Path[] = [
     title: "Swap",
     path: "/swap",
   },
-  // {
-  //   title: "Pool",
-  //   path: "/pool",
-  // },
+   {
+    title: "Pool",
+     path: "/pool",
+   },
   {
     title: "Lend",
     path: "/lend",
