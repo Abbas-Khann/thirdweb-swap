@@ -346,4 +346,66 @@ export default function Swap() {
       </div>
     </div>
   );
+
+  // return (
+  //   // <div className=" bg-black min-h-screen bg-gradient-to-b from-[#1b1125] to-black">
+  //   <div className="">
+  //     <div className=" relative  flex-col w-full min-h-[80vh] flex items-center justify-center">
+  //       <Image src={bg} alt="bg" className=" absolute top-20 laptop:right-[18vw] desktop:right-[25vw] " />
+  //       <div className=" laptop:mt-24 desktop:mt-10 w-[90vw] md:w-auto relative bg-[#212429] backdrop-blur-sm  bg-opacity-30 border border-slate-700 p-10 py-12  rounded-xl flex-col gap-6 flex items-center justify-center">
+  //         <div className=" absolute top-4 left-10  text-gray-200 mr-auto text-2xl font-semibold">
+  //           Swap
+  //         </div>
+  //         <div className=" pt-5 flex items-center flex-col justify-center gap-3">
+  //           <SwapInput
+  //             current={currentFrom}
+  //             type="native"
+  //             max={nativeBalance?.displayValue}
+  //             value={nativeValue}
+  //             setValue={setNativeValue}
+  //             // tokenImage={resolveIpfsUri(ACTIVE_CHAIN.icon!.url)}
+  //           />
+
+  //           <button
+  //             className=" w-8 px-2 py-0.5 rounded-sm  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto "
+  //             onClick={() =>
+  //               currentFrom === "native"
+  //                 ? setCurrentFrom("token")
+  //                 : setCurrentFrom("native")
+  //             }
+  //           >
+  //             ↓
+  //           </button>
+
+  //           <SwapInput
+  //             current={currentFrom}
+  //             type="token"
+  //             max={tokenBalance?.displayValue}
+  //             value={tokenValue}
+  //             setValue={setTokenValue}
+  //             // tokenImage={tokenMetadata?.image}
+  //             tokenImage={eth}
+  //           />
+  //         </div>
+
+  //         {address ? (
+  //           <button
+  //             // bg-sky-500 rounded-md active:scale-95 transition-all ease-in-out  bg-gradient-to-r from-[#1b1125] to-black
+  //             className="w-full py-4 px-6 text-2xl text-white font-semibold bg-[#8a4fc5] rounded-lg transition-all ease-in-out active:scale-95"
+  //             onClick={executeSwap}
+  //             disabled={loading}
+  //           >
+  //             {loading ? <Spinner /> : "Execute Swap"}
+  //           </button>
+  //         ) : (
+  //           <ConnectWallet
+  //             className=" "
+  //             style={{ padding: "20px 0px", fontSize: "18px", width: "100%" }}
+  //             theme="dark"
+  //           />
+  //         )}
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
 }

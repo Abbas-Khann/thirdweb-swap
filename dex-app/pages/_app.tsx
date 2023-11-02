@@ -1,3 +1,4 @@
+import Navbar from "@/components/Navbar";
 import { ACTIVE_CHAIN, FACTORY_ADDRESS } from "@/const/details";
 import "@/styles/globals.css";
 import {
@@ -50,7 +51,15 @@ export default function App({ Component, pageProps }: AppProps) {
         ),
       ]}
     >
-      <Component {...pageProps} />
+      <div className=" relative bg-black min-h-screen bg-gradient-to-b from-[#1b1125] to-black">
+        <div className=" z-0  gradient absolute top-0 w-full h-full bg-no-repeat"></div>
+        <div className=" relative z-50 ">
+          <Navbar />
+        </div>
+        <div className=" relative min-h-screen">
+          <Component {...pageProps} />
+        </div>
+      </div>
     </ThirdwebProvider>
   );
 }
