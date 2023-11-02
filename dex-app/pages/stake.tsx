@@ -174,7 +174,6 @@ export default function Stake() {
     </div>
   );
 }
-import React from "react";
 
 // export default function Stake() {
 //   return (
