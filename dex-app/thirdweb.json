@@ -1,0 +1,79 @@
+{
+  "chainIds": [
+    11155111
+  ],
+  "contracts": [
+    {
+      "address": "0xCf89AA0E8DDE4D64982f1d7b25cb80A6F2bC52F4",
+      "chainId": 11155111
+    },
+    {
+      "address": "0x37c8C8824063B1367C70bfD8BCDc2cdde1187a82",
+      "chainId": 11155111
+    },
+    {
+      "address": "0x3C8f3a39529Ba226eba9316cc7bA2D3bF0f80133",
+      "chainId": 11155111
+    },
+    {
+      "address": "0xaa18116a2EBBA1F5621468E7C8E69191e2Bfb9Ad",
+      "chainId": 11155111
+    },
+    {
+      "address": "0x9899DA27023386bcEe56F0daD279617d3dd26f8b",
+      "chainId": 11155111
+    },
+    {
+      "address": "0x97EA491FA1D5d3f08C7AECcF2C6b231A8ADd66a0",
+      "chainId": 11155111
+    },
+    {
+      "address": "0x47495d48d2b10A580486668C00B4E3E674eB1B7b",
+      "chainId": 11155111
+    },
+    {
+      "address": "0xAAB81814d04aB8E18d5Dc049685404b9487d3677",
+      "chainId": 11155111
+    },
+    {
+      "address": "0x1236b4f63449dB1DE0a4073f1CF47764714Cc584",
+      "chainId": 11155111
+    },
+    {
+      "address": "0x416414Ae8a747040c23b332A2Dd9FF2cA95aA128",
+      "chainId": 11155111
+    },
+    {
+      "address": "0x2f1a46fB128F76a1196d4d60ea6665403901cf9E",
+      "chainId": 11155111
+    },
+    {
+      "address": "0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951",
+      "chainId": 11155111
+    },
+    {
+      "address": "0x3e9708d80f7B3e43118013075F7e95CE3AB31F31",
+      "chainId": 11155111
+    },
+    {
+      "address": "0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357",
+      "chainId": 11155111
+    },
+    {
+      "address": "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8",
+      "chainId": 11155111
+    },
+    {
+      "address": "0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0",
+      "chainId": 11155111
+    },
+    {
+      "address": "0xbD97464cbfAb43c030Cdd6428ED70E5036Bb77F4",
+      "chainId": 11155111
+    },
+    {
+      "address": "0x7853e2642a084Dd60B9c1F73F3Ba3bdcb8B36856",
+      "chainId": 11155111
+    }
+  ]
+}
