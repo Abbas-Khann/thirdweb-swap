@@ -36,6 +36,8 @@ export const tokens: TokenType[] = [
 
 export interface ReserveDataType {
   asset: `0x${string}`;
+  assetName: string;
+  price: string;
   totalSupply: number; // total Supply of aToken
   totalDebt: number; // total Stable debt + variable debt
   totalLiquidity: number; // total variable debt

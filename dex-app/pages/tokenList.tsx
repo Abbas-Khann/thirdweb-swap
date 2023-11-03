@@ -36,7 +36,8 @@ export default function TokenList() {
 
   const getReserveInfo = async (
     assetAddress: `0x${string}`,
-    decimal: number
+    decimal: number,
+    assetName: string
   ): Promise<ReserveDataType | undefined> => {
     try {
       console.log(assetAddress);
@@ -50,7 +51,9 @@ export default function TokenList() {
         Number(formatUnits(reserveData.totalStableDebt.toString(), decimal)) +
         Number(formatUnits(reserveData.totalVariableDebt.toString(), decimal));
       const reserveInfo: ReserveDataType = {
+        assetName: assetName,
         asset: assetAddress,
+        price: "$ 1",
         totalSupply: Number(
           formatUnits(reserveData.totalAToken.toString(), decimal)
         ),
@@ -89,7 +92,8 @@ export default function TokenList() {
     for (let id = 0; id < totalTokens; id++) {
       const info = await getReserveInfo(
         loanTokens[id].address,
-        loanTokens[id].decimals
+        loanTokens[id].decimals,
+        loanTokens[id].name
       );
       if (info) {
         promises.push(info);
@@ -103,6 +107,62 @@ export default function TokenList() {
       setAssetsInfo(finalInfo);
     }
   };
+  return (
+    <div className=" min-h-screen  pt-48">
+      <h1 className="font-bold sm:text-4xl text-gray-300 text-4xl leading-none text-center tracking-tight mb-12 ">
+        Top Tokens on&nbsp;
+        <span
+          className="!bg-clip-text text-transparent"
+          style={{
+            background:
+              "linear-gradient(73.59deg, #C339AC 42.64%, #CD4CB5 54%, #E173C7 77.46%)",
+          }}
+        >
+          thirdweb
+        </span>
+      </h1>
 
-  return <div>tokenList</div>;
+      <div className="relative overflow-x-auto max-w-3xl mx-auto mt-20">
+        <table className="w-full text-lg text-gray-500 dark:text-gray-400">
+          <thead className=" text-white ">
+            <tr>
+              <th scope="col" className="px-6 py-3">
+                Token
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Total Supplied (TVL)
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Supply APY
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Borrow Rate Stable
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Borrow Rate Variable
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {assetsInfo ? (
+              assetsInfo.map((row, idx) => (
+                <tr
+                  key={idx}
+                  className=" text-sm text-center border-b border-gray-600 "
+                >
+                  <td className="px-6 pl-12 py-4">{row.assetName}</td>
+                  <td className="px-6 py-4">{row.totalSupply}</td>
+                  <td className="px-6 py-4">{row.liquidityRate}</td>
+                  <td className="px-6 py-4">{row.borrowRateStable}</td>
+                  <td className="px-6 pr-12 py-4">{row.borrowRateVariable}</td>
+                </tr>
+              ))
+            ) : (
+              <div className="text-sm text-center">No Info </div>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 }
