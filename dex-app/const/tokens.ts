@@ -15,7 +15,7 @@ export interface TokenType {
 
 export const tokens: TokenType[] = [
   {
-    name: "eth",
+    name: "ETH",
     symbol: "ETH",
     isNative: true,
     address: "0x7853e2642a084Dd60B9c1F73F3Ba3bdcb8B36856",
@@ -39,6 +39,12 @@ export const tokens: TokenType[] = [
     decimals: 18,
   },
 ];
+
+export const tokenLink: { [id: string]: TokenType } = {
+  ETH: tokens[0],
+  DAI: tokens[1],
+  USDT: tokens[2],
+};
 
 export interface ReserveDataType {
   asset: `0x${string}`;
