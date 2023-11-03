@@ -12,15 +12,8 @@ import {
   parseUnits,
 } from "ethers/lib/utils";
 import { TokenType, tokenLink, tokens } from "@/const/tokens";
-import {
-  ConnectWallet,
-  useAddress,
-  useContract,
-  useContractWrite,
-  useSDK,
-} from "@thirdweb-dev/react";
+import { useAddress, useContract, useSDK } from "@thirdweb-dev/react";
 import { PositionType, TokenPairType, tokenpairs } from "@/const/pair";
-import { Console } from "console";
 
 export default function Pool() {
   const [selectedToken1, setSelectedToken1] = useState(tokens[0]);
@@ -353,87 +346,6 @@ export default function Pool() {
     }
   }, [address]);
 
-  // return (
-  //   <div className="flex flex-col justify-center items-center">
-  //     pool
-  //     <div className="flex flex-col items-center">
-  //       <ConnectWallet
-  //         className=" "
-  //         style={{ padding: "20px 0px", fontSize: "18px", width: "100%" }}
-  //         theme="dark"
-  //       />
-  //       <div>
-  //         {selectedToken1 && selectedToken1.name}
-  //         <br />
-  //         <input
-  //           type="number"
-  //           value={desiredAmountA}
-  //           className="text-gray-200 outline-double"
-  //           onChange={(e) => {
-  //             setDesiredAmountA(Number(e.target.value));
-  //             quoteB(Number(e.target.value), reserveA, reserveB);
-  //           }}
-  //         ></input>
-  //         <br />
-  //       </div>
-  //       <br />
-  //       <div>
-  //         {selectedToken2 && selectedToken2.name}
-  //         <br />
-  //         <input
-  //           type="number"
-  //           value={desiredAmountB}
-  //           className="text-gray-200 outline-double"
-  //           onChange={(e) => {
-  //             setDesiredAmountB(Number(e.target.value));
-  //             quoteA(Number(e.target.value), reserveA, reserveB);
-  //           }}
-  //         ></input>
-  //         <br />
-  //       </div>
-  //       <div>
-  //         <button
-  //           className="text-white font-semibold bg-[#8a4fc5]"
-  //           onClick={handleAddLiquidity}
-  //         >
-  //           Add Liquidity & create Pair
-  //         </button>
-  //       </div>
-  //     </div>
-  //     <div className="flex flex-col items-center">
-  //       {positions?.map((position) => {
-  //         return (
-  //           <>
-  //             <div>
-  //               {position && position.token1.name} -{" "}
-  //               {position && position.token2.name} : {position.liquidtyAmount}
-  //               <br />
-  //             </div>
-  //             <br />
-  //             <div>
-  //               <input
-  //                 type="number"
-  //                 className="text-gray-200 outline-double"
-  //                 onChange={(e) => {
-  //                   setLiquidity(Number(e.target.value));
-  //                 }}
-  //               ></input>
-  //               <button
-  //                 className="text-white font-semibold bg-[#8a4fc5]"
-  //                 onClick={() =>
-  //                   handleRemoveLiquidity(position.token1, position.token2)
-  //                 }
-  //               >
-  //                 Remove Liquidity
-  //               </button>
-  //             </div>
-  //           </>
-  //         );
-  //       })}
-  //     </div>
-  //   </div>
-  // );
-
   return (
     <div className=" min-h-screen  pt-48 flex items-start justify-center text-white">
       <div className="relative overflow-x-auto laptop:w-8/12  mx-auto mt-5">
@@ -554,25 +466,6 @@ export default function Pool() {
                 </tr>
               );
             })}
-            {/* <tr className=" text-sm text-center border-b border-gray-600 ">
-              <td className="px-6 py-4">Tk1</td>
-              <td className="px-6 py-4">Tk2</td>
-              <td className="px-6 py-4">0.692323</td>
-              <td className="px-6 py-4 space-x-3">
-                <input
-                  placeholder="0"
-                  type="number"
-                  value={liquidity}
-                  onChange={(e) => {
-                    setLiquidity(Number(e.target.value));
-                  }}
-                  className="w-1/4 bg-transparent border border-gray-400 px-3 py-2 m rounded-md text-white outline-none"
-                />
-                <button className=" border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-red-500 bg-opacity-100 text-white 5mx-auto ">
-                  Remove Liquidity
-                </button>
-              </td>
-            </tr> */}
           </tbody>
         </table>
       </div>

@@ -9,11 +9,9 @@ import {
   parseUnits,
 } from "ethers/lib/utils";
 import {
-  ConnectWallet,
   useAddress,
   useContract,
   useContractRead,
-  useContractWrite,
   useSDK,
 } from "@thirdweb-dev/react";
 import { POOL_ADDRESS, POOL_DATA_PROVIDER_ADDRESS } from "@/const/details";
