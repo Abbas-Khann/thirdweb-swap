@@ -30,7 +30,6 @@ import {
 import { TokenType, tokens } from "@/const/tokens";
 import { Spinner } from "@chakra-ui/react";
 import Image from "next/image";
-import eth from "../assets/eth.png";
 import bg from "../assets/bg.png";
 
 export default function Swap() {
@@ -75,6 +74,8 @@ export default function Swap() {
 
   const approveToken = async (token: TokenType, amount: number) => {
     try {
+      setLoading(true);
+
       const contract = await sdk?.getContract(token.address);
       const data = await contract?.call("allowance", [
         address,
@@ -89,7 +90,10 @@ export default function Swap() {
         ]);
         console.log(tx);
       }
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
+
       console.log(error);
     }
   };
@@ -100,6 +104,8 @@ export default function Swap() {
   };
 
   const handleSubmit = () => {
+    setLoading(true);
+
     const path = [selectedToken1.address, selectedToken2.address];
     try {
       if (exactAmountIn) {
@@ -119,7 +125,10 @@ export default function Swap() {
           swapTokensForExactTokens(amountTwo, amountOne, path);
         }
       }
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
+
       console.log(error);
     }
   };
@@ -129,6 +138,7 @@ export default function Swap() {
     valueOutMin: number,
     path: `0x${string}`[]
   ) => {
+    setLoading(true);
     await approveToken(selectedToken1, valueIn);
     const deadline = getDeadline();
 
@@ -140,6 +150,7 @@ export default function Swap() {
       deadline,
     ]);
     console.log(tx);
+    setLoading(false);
   };
 
   const swapTokensForExactTokens = async (
@@ -147,6 +158,8 @@ export default function Swap() {
     valueInMax: number,
     path: `0x${string}`[]
   ) => {
+    setLoading(true);
+
     await approveToken(selectedToken1, valueInMax);
     const deadline = getDeadline();
 
@@ -160,6 +173,7 @@ export default function Swap() {
     ]);
 
     console.log(tx);
+    setLoading(false);
   };
 
   const swapETHForExactTokens = async (
@@ -167,6 +181,8 @@ export default function Swap() {
     path: `0x${string}`[],
     valueETH: number
   ) => {
+    setLoading(true);
+
     const deadline = getDeadline();
 
     const tx = await routerContract?.call(
@@ -180,6 +196,7 @@ export default function Swap() {
       { value: parseEther(valueETH.toString()) }
     );
     console.log(tx);
+    setLoading(false);
   };
 
   const swapExactETHForTokens = async (
@@ -187,6 +204,8 @@ export default function Swap() {
     valueOutMin: number,
     path: `0x${string}`[]
   ) => {
+    setLoading(true);
+
     const deadline = getDeadline();
 
     const tx = await routerContract?.call(
@@ -200,6 +219,7 @@ export default function Swap() {
       { value: parseEther(valueIn.toString()) }
     );
     console.log(tx);
+    setLoading(false);
   };
 
   const swapExactTokensForETH = async (
@@ -207,6 +227,8 @@ export default function Swap() {
     path: `0x${string}`[],
     valueOutMin: number
   ) => {
+    setLoading(true);
+
     await approveToken(selectedToken1, valueIn);
     const deadline = getDeadline();
 
@@ -218,6 +240,7 @@ export default function Swap() {
       deadline,
     ]);
     console.log(tx);
+    setLoading(false);
   };
 
   const swapTokensForExactETH = async (
@@ -225,6 +248,8 @@ export default function Swap() {
     path: `0x${string}`[],
     valueIn: number
   ) => {
+    setLoading(true);
+
     // approve tokens to be sent
     await approveToken(selectedToken1, valueIn);
     const deadline = getDeadline();
@@ -237,6 +262,7 @@ export default function Swap() {
       deadline,
     ]);
     console.log(tx);
+    setLoading(false);
   };
 
   const getReserves = async (tokenA: TokenType, tokenB: TokenType) => {
