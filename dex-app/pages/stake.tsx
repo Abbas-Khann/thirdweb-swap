@@ -15,6 +15,7 @@ import {
   STAKING_TOKEN,
   WETH_ADDRESS,
 } from "@/const/details";
+import { Spinner } from "@chakra-ui/react";
 
 export default function Stake() {
   //   const [selectedToken, setSelectedToken] = useState(tokens[0]);
@@ -60,6 +61,8 @@ export default function Stake() {
 
   const stakeTokens = async () => {
     try {
+      setLoading(true);
+
       await approveToken({
         args: [STAKING_ADDRESS, parseEther(inputAmount.toString())],
       });
@@ -80,6 +83,8 @@ export default function Stake() {
   // call this function in the withdraw button with inputAmount as _amount
   const withdraw = async () => {
     try {
+      setLoading(true);
+
       if (withdrawAmount) {
         const _withdraw = await stakingContract?.call("withdraw", [
           parseEther(withdrawAmount.toString()),
@@ -89,6 +94,8 @@ export default function Stake() {
         setLoading(false);
       }
     } catch (err) {
+      setLoading(false);
+
       console.error(err);
       // toast.error(err);
     }
@@ -96,6 +103,8 @@ export default function Stake() {
 
   const redeemRewards = async () => {
     try {
+      setLoading(true);
+
       // in the param put in the token that was staked
       const _redeemRewards = await stakingContract?.call("claimRewards");
       setLoading(true);
@@ -103,6 +112,8 @@ export default function Stake() {
       setLoading(false);
       // toast.success("Redeemed rewards")
     } catch (err) {
+      setLoading(false);
+
       console.error(err);
       // toast.error(err)
       //   alert(err.message);
@@ -168,6 +179,7 @@ export default function Stake() {
             Claim Rewards
           </button>
         </div>
+        {loading && <Spinner />}
       </div>
     </div>
   );

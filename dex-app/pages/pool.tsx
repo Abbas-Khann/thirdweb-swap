@@ -14,6 +14,7 @@ import {
 import { TokenType, tokenLink, tokens } from "@/const/tokens";
 import { useAddress, useContract, useSDK } from "@thirdweb-dev/react";
 import { PositionType, TokenPairType, tokenpairs } from "@/const/pair";
+import { Spinner } from "@chakra-ui/react";
 
 export default function Pool() {
   const [selectedToken1, setSelectedToken1] = useState(tokens[0]);
@@ -23,6 +24,7 @@ export default function Pool() {
   const [newPool, setNewPool] = useState(false);
   const [liquidity, setLiquidity] = useState(0);
   const [positions, setPositions] = useState<PositionType[]>();
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [reserveA, setReserveA] = useState(0);
   const [reserveB, setReserveB] = useState(0);
@@ -65,6 +67,8 @@ export default function Pool() {
 
   const approveToken = async (token: TokenType, amount: number) => {
     try {
+      setLoading(true);
+
       const contract = await sdk?.getContract(token.address);
       const data = await contract?.call("allowance", [
         address,
@@ -79,7 +83,10 @@ export default function Pool() {
         ]);
         console.log(tx);
       }
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
+
       console.log(error);
     }
   };
@@ -91,6 +98,8 @@ export default function Pool() {
     tokenB: TokenType
   ) => {
     try {
+      setLoading(true);
+
       if (tokenA && tokenB && valueOne && valueTwo && address) {
         await approveToken(tokenA, valueOne);
         await approveToken(tokenB, valueTwo);
@@ -112,7 +121,10 @@ export default function Pool() {
         // setLoading(false);
       } else {
       }
+      setLoading(false);
     } catch (err) {
+      setLoading(false);
+
       // alert shall be changed to toast.error(err.reason) once kushagra adds it
       //   alert(err.reason);
       console.error(err);
@@ -125,6 +137,8 @@ export default function Pool() {
     token: TokenType
   ) => {
     try {
+      setLoading(true);
+
       if (token && valueToken && valueETH && address) {
         await approveToken(token, valueToken);
 
@@ -143,10 +157,13 @@ export default function Pool() {
         );
         // setLoading(true);
         console.log(_addLiquidity);
-        // setLoading(false);
+        setLoading(false);
       } else {
       }
+      setLoading(false);
     } catch (err) {
+      setLoading(false);
+
       //   alert(err.reason);
       console.error(err);
     }
@@ -210,6 +227,8 @@ export default function Pool() {
     liquidityAmount: number
   ) => {
     try {
+      setLoading(true);
+
       if (addressTokenA && addressTokenB && liquidityAmount) {
         const _deadline = getDeadline();
         const _removeLiquidity = await routerContract?.call("removeLiquidity", [
@@ -227,6 +246,8 @@ export default function Pool() {
       } else {
       }
     } catch (err) {
+      setLoading(false);
+
       // alert shall be changed to toast.error(err.reason) once kushagra adds it
       //   alert(err.reason);
       console.error(err);
@@ -238,6 +259,8 @@ export default function Pool() {
     addressTokenA: `0x${string}`
   ) => {
     try {
+      setLoading(true);
+
       if (addressTokenA && liquidityAmount) {
         const _deadline = getDeadline();
         const _removeLiquidity = await routerContract?.call(
@@ -253,11 +276,13 @@ export default function Pool() {
         );
         // setLoading(true);
         console.log(_removeLiquidity);
-        // setLoading(false);
+        setLoading(false);
       } else {
       }
     } catch (err) {
       //   alert(err.reason);
+      setLoading(false);
+
       console.error(err);
     }
   };
@@ -468,6 +493,7 @@ export default function Pool() {
             })}
           </tbody>
         </table>
+        {loading && <Spinner />}
       </div>
     </div>
   );

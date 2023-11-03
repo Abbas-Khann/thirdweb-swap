@@ -18,8 +18,10 @@ interface Data {
   tvl: string;
   volume: string;
 }
+import { Spinner } from "@chakra-ui/react";
 
 export default function TokenList() {
+  const [loading, setLoading] = useState<boolean>(false);
   const [assetsInfo, setAssetsInfo] = useState<ReserveDataType[]>();
   const address = useAddress();
   const sdk = useSDK();
@@ -90,28 +92,37 @@ export default function TokenList() {
   };
 
   const getAllAssetInfo = async () => {
-    let promises: ReserveDataType[] = [];
-    // await loanTokens.map(async (loanToken) => {
-    //   const info = await getReserveInfo(loanToken.address);
-    //   if (info) {promises.push(info);}
-    // });
-    const totalTokens = loanTokens.length;
-    for (let id = 0; id < totalTokens; id++) {
-      const info = await getReserveInfo(
-        loanTokens[id].address,
-        loanTokens[id].decimals,
-        loanTokens[id].name
-      );
-      if (info) {
-        promises.push(info);
-      }
-    }
+    try {
+      setLoading(true);
 
-    console.log(promises);
-    if (promises) {
-      const finalInfo = await Promise.all(promises);
-      console.log(finalInfo);
-      setAssetsInfo(finalInfo);
+      let promises: ReserveDataType[] = [];
+      // await loanTokens.map(async (loanToken) => {
+      //   const info = await getReserveInfo(loanToken.address);
+      //   if (info) {promises.push(info);}
+      // });
+      const totalTokens = loanTokens.length;
+      for (let id = 0; id < totalTokens; id++) {
+        const info = await getReserveInfo(
+          loanTokens[id].address,
+          loanTokens[id].decimals,
+          loanTokens[id].name
+        );
+        if (info) {
+          promises.push(info);
+        }
+      }
+
+      console.log(promises);
+      if (promises) {
+        const finalInfo = await Promise.all(promises);
+        console.log(finalInfo);
+        setAssetsInfo(finalInfo);
+      }
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+
+      console.log(error);
     }
   };
   return (
@@ -169,6 +180,7 @@ export default function TokenList() {
             )}
           </tbody>
         </table>
+        {loading && <Spinner />}
       </div>
     </div>
   );

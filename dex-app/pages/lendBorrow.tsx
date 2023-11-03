@@ -23,6 +23,7 @@ import {
   loanTokens,
 } from "@/const/tokens";
 import { Select } from "@chakra-ui/react";
+import { Spinner } from "@chakra-ui/react";
 
 export default function LendBorrow() {
   const [selectedToken, setSelectedToken] = useState<TokenType>(loanTokens[0]);
@@ -38,6 +39,7 @@ export default function LendBorrow() {
   const [toggleBorrow, setToggleBorrow] = useState<boolean>(false);
   const [toggleWithdraw, setToggleWithdraw] = useState<boolean>(false);
   const [toggleRepay, setToggleRepay] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const address = useAddress();
   const sdk = useSDK();
@@ -58,13 +60,18 @@ export default function LendBorrow() {
     decimals: number
   ) => {
     try {
+      setLoading(true);
+
       const contract = await sdk?.getContract(tokenAddress);
       const tx = await contract?.call("approve", [
         POOL_ADDRESS,
         parseUnits(amount.toString(), decimals),
       ]);
       console.log(tx);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
+
       console.log(error);
     }
   };
@@ -217,6 +224,8 @@ export default function LendBorrow() {
   const supplyToken = async () => {
     try {
       if (supplyAmount) {
+        setLoading(true);
+
         await approveToken(
           selectedToken.address,
           supplyAmount,
@@ -229,11 +238,12 @@ export default function LendBorrow() {
           address,
           0,
         ]);
-        // setLoading(true);
         console.log(txn);
-        // setLoading(false);
+        setLoading(false);
       }
     } catch (err) {
+      setLoading(false);
+
       console.error(err);
     }
   };
@@ -241,6 +251,7 @@ export default function LendBorrow() {
   const withdrawToken = async () => {
     try {
       if (withdrawAmount) {
+        setLoading(true);
         // const amountWithdraw = getWithdrawalAmount(_amount);
         // we have to check and calculate the total withdraw Amount
         // type(uint).max  for maximum available withdraw
@@ -249,17 +260,20 @@ export default function LendBorrow() {
           parseUnits(withdrawAmount.toString(), selectedToken.decimals),
           address,
         ]);
-        // setLoading(true);
         console.log(txn);
-        // setLoading(false);
+        setLoading(false);
       }
     } catch (err) {
+      setLoading(false);
+
       console.error(err);
     }
   };
 
   const borrowToken = async () => {
     try {
+      setLoading(true);
+
       if (borrowAmount) {
         const txn = await poolContract?.call("borrow", [
           selectedToken.address,
@@ -268,12 +282,12 @@ export default function LendBorrow() {
           0,
           address,
         ]);
-        // setLoading(true);
         console.log(txn);
-        // setLoading(false);
+        setLoading(false);
         // add some toaster i guess
       }
     } catch (err) {
+      setLoading(false);
       console.error(err);
     }
   };
@@ -281,6 +295,8 @@ export default function LendBorrow() {
   const repayToken = async () => {
     try {
       if (repayAmount) {
+        setLoading(true);
+
         // need to find the total repay amount , along with the interest
         // Use uint(-1)  : to pay the entire loan
         await approveToken(
@@ -294,12 +310,13 @@ export default function LendBorrow() {
           1, // interest rate model
           address,
         ]);
-        // setLoading(true);
         console.log(txn);
 
-        // setLoading(false);
+        setLoading(false);
       }
     } catch (err) {
+      setLoading(false);
+
       console.error(err);
     }
   };
@@ -472,6 +489,7 @@ export default function LendBorrow() {
             </button>
           </div>
         </div>
+        {loading && <Spinner />}
       </div>
     </div>
   );
