@@ -17,19 +17,19 @@ interface Path {
 const paths: Path[] = [
   {
     title: "Token",
-    path: "/token",
+    path: "/tokenList",
   },
   {
     title: "Swap",
     path: "/swap",
   },
-   {
+  {
     title: "Pool",
-     path: "/pool",
-   },
+    path: "/pool",
+  },
   {
     title: "Lend",
-    path: "/lend",
+    path: "/lendBorrow",
   },
   {
     title: "Stake",

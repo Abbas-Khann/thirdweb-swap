@@ -71,6 +71,12 @@ export const loanTokens: TokenType[] = [
   },
 ];
 
+export const loanTokenLink: { [id: string]: TokenType } = {
+  DAI: loanTokens[0],
+  USDC: loanTokens[1],
+  USDT: loanTokens[2],
+};
+
 export interface UserDataType {
   tokenBalance: number;
   totalSupplied: number; // A token balance

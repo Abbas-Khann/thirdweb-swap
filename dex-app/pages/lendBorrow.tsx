@@ -21,6 +21,7 @@ import {
   ReserveDataType,
   TokenType,
   UserDataType,
+  loanTokenLink,
   loanTokens,
 } from "@/const/tokens";
 import { Select } from "@chakra-ui/react";
@@ -31,11 +32,14 @@ export default function LendBorrow() {
   const [tokenInfo, setTokenInfo] = useState<ReserveDataType>();
   const [lendAmount, setLendAmount] = useState(0);
   const [borrowedAmount, setBorrowedAmount] = useState(0);
-
   const [supplyAmount, setSupplyAmount] = useState<number>(0);
   const [borrowAmount, setBorrowAmount] = useState<number>(0);
   const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
   const [repayAmount, setRepayAmount] = useState<number>(0);
+  const [toggleSupply, setToggleSupply] = useState<boolean>(false);
+  const [toggleBorrow, setToggleBorrow] = useState<boolean>(false);
+  const [toggleWithdraw, setToggleWithdraw] = useState<boolean>(false);
+  const [toggleRepay, setToggleRepay] = useState<boolean>(false);
 
   const address = useAddress();
   const sdk = useSDK();
@@ -301,84 +305,249 @@ export default function LendBorrow() {
   };
 
   useEffect(() => {
+    // console.log(selectedToken);
     if (selectedToken && address) {
       getUserReserveData();
       getReserveInfo();
     }
-  }, [selectedToken && address]);
+  }, [selectedToken || address]);
+
+  // return (
+  //   <div className="flex flex-col justify-center items-center">
+  //     lendBorrow
+  //     <div className="flex flex-col items-center">
+  //       <ConnectWallet
+  //         className=" "
+  //         style={{ padding: "20px 0px", fontSize: "18px", width: "100%" }}
+  //         theme="dark"
+  //       />
+  //       {/* <Select value={selectedToken} onChange={(e)=>setSelectedToken(e.target.value)} placeholder='Select Token'>
+  //         {loanTokens.map((token)=>{
+  //           return (<option value={token.name}>{token.name}</option>)
+  //         })}
+  //       </Select> */}
+  //       {selectedToken && selectedToken.name}
+  //       {/* Display User Data along with the data for this asset */}
+
+  //       <div>
+  //         <input
+  //           className="text-gray-200 outline-double"
+  //           onChange={(e) => setSupplyAmount(Number(e.target.value))}
+  //         ></input>
+  //         <br />
+  //         <button
+  //           className="text-white font-semibold bg-[#8a4fc5]"
+  //           onClick={supplyToken}
+  //         >
+  //           Supply
+  //         </button>
+  //       </div>
+  //       <br />
+  //       <div>
+  //         <input
+  //           className="text-gray-200 outline-double"
+  //           onChange={(e) => setWithdrawAmount(Number(e.target.value))}
+  //         ></input>
+  //         <br />
+  //         <button
+  //           className="text-white font-semibold bg-[#8a4fc5]"
+  //           onClick={withdrawToken}
+  //         >
+  //           withdraw
+  //         </button>
+  //       </div>
+  //       <br />
+  //       <div>
+  //         <input
+  //           className="text-gray-200 outline-double"
+  //           onChange={(e) => setBorrowAmount(Number(e.target.value))}
+  //         ></input>
+  //         <br />
+  //         <button
+  //           className="text-white font-semibold bg-[#8a4fc5]"
+  //           onClick={borrowToken}
+  //         >
+  //           Borrow
+  //         </button>
+  //       </div>
+  //       <br />
+
+  //       <div>
+  //         <input
+  //           className="text-gray-200 outline-double"
+  //           onChange={(e) => setRepayAmount(Number(e.target.value))}
+  //         ></input>
+  //         <br />
+  //         <button
+  //           className="text-white font-semibold bg-[#8a4fc5]"
+  //           onClick={repayToken}
+  //         >
+  //           Repay
+  //         </button>
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
 
   return (
-    <div className="flex flex-col justify-center items-center">
-      lendBorrow
-      <div className="flex flex-col items-center">
-        <ConnectWallet
-          className=" "
-          style={{ padding: "20px 0px", fontSize: "18px", width: "100%" }}
-          theme="dark"
-        />
-        {/* <Select value={selectedToken} onChange={(e)=>setSelectedToken(e.target.value)} placeholder='Select Token'>
-          {loanTokens.map((token)=>{
-            return (<option value={token.name}>{token.name}</option>)
-          })}
-        </Select> */}
-        {selectedToken && selectedToken.name}
-        {/* Display User Data along with the data for this asset */}
+    <div className=" min-h-screen  pt-48 flex items-start justify-center">
+      <div className=" grid grid-cols-12 gap-y-6 gap-x-12">
+        <div className="col-span-12 items-center justify-center flex">
+          <select
+            onChange={(e) => setSelectedToken(loanTokenLink[e.target.value])}
+            className=" laptop:min-w-[400px] text-center py-5 px-8 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white"
+          >
+            {/* <option value="DAI">Select any token to lend</option> */}
+            {loanTokens.map((loanToken) => {
+              return (
+                <option key={loanToken.address} value={loanToken.name}>
+                  {loanToken.name}
+                </option>
+              );
+            })}
+          </select>
+        </div>
 
-        <div>
-          <input
-            className="text-gray-200 outline-double"
-            onChange={(e) => setSupplyAmount(Number(e.target.value))}
-          ></input>
-          <br />
-          <button
-            className="text-white font-semibold bg-[#8a4fc5]"
-            onClick={supplyToken}
-          >
-            Supply
-          </button>
+        <div className=" mt-2 col-span-6 flex flex-col items-center justify-center gap-8 ">
+          <div className=" py-6 px-10 laptop:min-w-[420px] flex flex-col items-stretch justify-center gap-3 text-white border border-gray-400 rounded-md ">
+            <div className=" flex items-center justify-between">
+              <div>Wallet Balance</div>
+              <div>{userData?.tokenBalance}</div>
+            </div>
+            <div className=" flex items-center justify-between">
+              <div>Available to supply</div>
+              <div>{userData?.tokenBalance}</div>
+            </div>
+            <div className=" flex items-center justify-between">
+              <div>Available to borrow</div>
+              <div>{userData?.availableToBorrow}</div>
+            </div>
+          </div>
+          <div className=" flex items-center justify-center gap-x-6">
+            <button
+              onClick={() => setToggleSupply(!toggleSupply)}
+              className=" border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto "
+            >
+              Supply
+            </button>
+            <button
+              onClick={() => setToggleBorrow(!toggleBorrow)}
+              className=" border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto "
+            >
+              Borrow
+            </button>
+          </div>
         </div>
-        <br />
-        <div>
-          <input
-            className="text-gray-200 outline-double"
-            onChange={(e) => setWithdrawAmount(Number(e.target.value))}
-          ></input>
-          <br />
-          <button
-            className="text-white font-semibold bg-[#8a4fc5]"
-            onClick={withdrawToken}
-          >
-            withdraw
-          </button>
-        </div>
-        <br />
-        <div>
-          <input
-            className="text-gray-200 outline-double"
-            onChange={(e) => setBorrowAmount(Number(e.target.value))}
-          ></input>
-          <br />
-          <button
-            className="text-white font-semibold bg-[#8a4fc5]"
-            onClick={borrowToken}
-          >
-            Borrow
-          </button>
-        </div>
-        <br />
 
-        <div>
-          <input
-            className="text-gray-200 outline-double"
-            onChange={(e) => setRepayAmount(Number(e.target.value))}
-          ></input>
-          <br />
-          <button
-            className="text-white font-semibold bg-[#8a4fc5]"
-            onClick={repayToken}
-          >
-            Repay
-          </button>
+        <div className=" col-span-6 flex flex-col items-center justify-center gap-8 ">
+          <div className=" py-6 px-10 laptop:min-w-[420px] flex flex-col items-stretch justify-center gap-3 text-white border border-gray-400 rounded-md ">
+            <div className=" flex items-center justify-between">
+              <div>Supplied amount</div>
+              <div>{userData?.totalSupplied}</div>
+            </div>
+            <div className=" flex items-center justify-between">
+              <div>Borrowed amount</div>
+              <div>{userData?.totalBorrowed}</div>
+            </div>
+            <div className=" flex items-center justify-between">
+              <div>Interest</div>
+              <div>{tokenInfo?.borrowRateStable}</div>
+            </div>
+          </div>
+          <div className=" flex items-center justify-center gap-x-6">
+            <button
+              onClick={() => setToggleWithdraw(!toggleWithdraw)}
+              className=" border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto "
+            >
+              Withdraw
+            </button>
+            <button
+              onClick={() => setToggleRepay(!toggleRepay)}
+              className=" border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto "
+            >
+              Re-pay
+            </button>
+          </div>
+        </div>
+
+        <div className=" mt-4 col-span-12 flex flex-col items-center justify-center gap-8">
+          <div className={`${toggleWithdraw ? "visible" : "hidden"} `}>
+            <input
+              type="number"
+              id=""
+              className={` mt-5 bg-gray-800 text-white border  lg:w-full border-gray-300  text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
+              placeholder="0"
+              required
+              onChange={(e) => {
+                setWithdrawAmount(Number(e.target.value));
+              }}
+            />
+            <button
+              type="button"
+              className="text-white w-full  mt-4 bg-[#8a4fc5]  text-md font-fredoka active:bg-[#b49af9]  font-medium rounded-sm px-5 py-2.5 mb-2"
+              onClick={() => withdrawToken()}
+            >
+              Submit WithDraw
+            </button>
+          </div>
+          <div className={`${toggleRepay ? "visible" : "hidden"} `}>
+            <input
+              type="number"
+              id=""
+              className={` mt-5 bg-gray-800 text-white border  lg:w-full border-gray-300  text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
+              placeholder="0"
+              required
+              onChange={(e) => {
+                setRepayAmount(Number(e.target.value));
+              }}
+            />
+            <button
+              type="button"
+              className="text-white w-full  mt-4 bg-[#8a4fc5]  text-md font-fredoka active:bg-[#b49af9]  font-medium rounded-sm px-5 py-2.5 mb-2"
+              onClick={() => repayToken()}
+            >
+              Submit Repay
+            </button>
+          </div>
+
+          <div className={`${toggleSupply ? "visible" : "hidden"} `}>
+            <input
+              type="number"
+              id=""
+              className={` mt-5 bg-gray-800 text-white border  lg:w-full border-gray-300  text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
+              placeholder="0"
+              required
+              onChange={(e) => {
+                setSupplyAmount(Number(e.target.value));
+              }}
+            />
+            <button
+              type="button"
+              className="text-white w-full  mt-4 bg-[#8a4fc5]  text-md font-fredoka active:bg-[#b49af9]  font-medium rounded-sm px-5 py-2.5 mb-2"
+              onClick={() => supplyToken()}
+            >
+              Submit Supply
+            </button>
+          </div>
+          <div className={`${toggleBorrow ? "visible" : "hidden"} `}>
+            <input
+              type="number"
+              id=""
+              className={` mt-5 bg-gray-800 text-white border  lg:w-full border-gray-300  text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
+              placeholder="0"
+              required
+              onChange={(e) => {
+                setBorrowAmount(Number(e.target.value));
+              }}
+            />
+            <button
+              type="button"
+              className="text-white w-full  mt-4 bg-[#8a4fc5]  text-md font-fredoka active:bg-[#b49af9]  font-medium rounded-sm px-5 py-2.5 mb-2"
+              onClick={() => borrowToken()}
+            >
+              Submit Borrow
+            </button>
+          </div>
         </div>
       </div>
     </div>
