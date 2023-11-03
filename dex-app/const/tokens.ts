@@ -1,9 +1,15 @@
+import { StaticImageData } from "next/image";
+import eth from "../assets/eth3d.png";
+import dai from "../assets/dai3d.png";
+import usdt from "../assets/usdt3d.png";
+import usdc from "../assets/usdc3d.png";
+
 export interface TokenType {
   name: string;
   symbol: string;
   isNative: boolean;
   address: `0x${string}`;
-  logo: string;
+  logo: StaticImageData;
   decimals: number;
 }
 
@@ -13,7 +19,7 @@ export const tokens: TokenType[] = [
     symbol: "ETH",
     isNative: true,
     address: "0x7853e2642a084Dd60B9c1F73F3Ba3bdcb8B36856",
-    logo: "",
+    logo: eth,
     decimals: 18,
   },
   {
@@ -21,7 +27,7 @@ export const tokens: TokenType[] = [
     symbol: "USDT",
     isNative: false,
     address: "0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0",
-    logo: "",
+    logo: usdt,
     decimals: 6,
   },
   {
@@ -29,7 +35,7 @@ export const tokens: TokenType[] = [
     symbol: "DAI",
     isNative: false,
     address: "0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357",
-    logo: "",
+    logo: dai,
     decimals: 18,
   },
 ];
@@ -52,7 +58,7 @@ export const loanTokens: TokenType[] = [
     symbol: "DAI",
     isNative: false,
     address: "0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357",
-    logo: "",
+    logo: dai,
     decimals: 18,
   },
   {
@@ -60,7 +66,7 @@ export const loanTokens: TokenType[] = [
     symbol: "USDC",
     isNative: false,
     address: "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8",
-    logo: "",
+    logo: usdc,
     decimals: 6,
   },
   {
@@ -68,7 +74,7 @@ export const loanTokens: TokenType[] = [
     symbol: "USDT",
     isNative: false,
     address: "0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0",
-    logo: "",
+    logo: usdt,
     decimals: 6,
   },
 ];

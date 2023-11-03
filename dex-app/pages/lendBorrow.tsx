@@ -182,6 +182,8 @@ export default function LendBorrow() {
           )
         );
       const reserveInfo: ReserveDataType = {
+        assetName: selectedToken.name,
+        price: "$1",
         asset: selectedToken.address,
         totalSupply: Number(
           formatUnits(

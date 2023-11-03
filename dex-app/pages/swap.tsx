@@ -15,6 +15,7 @@ import {
   useTokenBalance,
 } from "@thirdweb-dev/react";
 import { useEffect, useState } from "react";
+import tokenImage from "../public/token.png";
 import {
   SWAP_ROUTER_ADDRESS,
   TOKEN_ADDRESS,
@@ -29,6 +30,8 @@ import {
 import { TokenType, tokens } from "@/const/tokens";
 import { Spinner } from "@chakra-ui/react";
 import Image from "next/image";
+import eth from "../assets/eth.png";
+import bg from "../assets/bg.png";
 
 export default function Swap() {
   const sdk = useSDK();
@@ -48,11 +51,13 @@ export default function Swap() {
   const [loading, setLoading] = useState<boolean>(false);
 
   // const { contract: tokenContract } = useContract(TOKEN_ADDRESS, "token");
-  const { contract: wethContract } = useContract(WETH_ADDRESS, "custom");
   const { contract: routerContract } = useContract(
     SWAP_ROUTER_ADDRESS,
     "custom"
   );
+  const { data: nativeBalance } = useBalance();
+  const { data: token1Balance } = useBalance(selectedToken1.address);
+  const { data: token2Balance } = useBalance(selectedToken2.address);
   // const { mutateAsync: approveToken } = useContractWrite(
   //   tokenContract,
   //   "approve"
@@ -299,150 +304,156 @@ export default function Swap() {
   }, [selectedToken1, selectedToken2]);
 
   return (
-    <div className="flex flex-col justify-center items-center">
-      Swap
-      <div className="flex flex-col items-center">
-        <ConnectWallet
-          className=" "
-          style={{ padding: "20px 0px", fontSize: "18px", width: "100%" }}
-          theme="dark"
+    // <div className=" bg-black min-h-screen bg-gradient-to-b from-[#1b1125] to-black">
+    <div className="">
+      <div className=" relative  flex-col w-full min-h-[80vh] flex items-center justify-center">
+        <Image
+          src={bg}
+          alt="bg"
+          className=" absolute top-20 laptop:right-[18vw] desktop:right-[25vw] "
         />
-        <div>
-          {selectedToken1 && selectedToken1.name}
-          <br />
-          <input
-            type="number"
-            value={amountOne}
-            className="text-gray-200 outline-double"
-            onChange={(e) => {
-              setAmountOne(Number(e.target.value));
-              getAmountOut(Number(e.target.value), reserveA, reserveB);
-              setExactAmountIn(true);
-            }}
-          ></input>
-          <br />
-        </div>
-        <br />
-        <div>
-          {selectedToken2 && selectedToken2.name}
-          <br />
-          <input
-            type="number"
-            value={amountTwo}
-            className="text-gray-200 outline-double"
-            onChange={(e) => {
-              setAmountTwo(Number(e.target.value));
-              getAmountIn(Number(e.target.value), reserveA, reserveB);
-              setExactAmountOut(true);
-            }}
-          ></input>
-          <br />
-        </div>
-        <div>
-          <button
-            className="text-white font-semibold bg-[#8a4fc5]"
-            onClick={handleSubmit}
-          >
+        <div className=" laptop:mt-24 desktop:mt-10 w-[90vw] md:w-auto relative bg-[#212429] backdrop-blur-sm  bg-opacity-30 border border-slate-700 p-10 py-12  rounded-xl flex-col gap-6 flex items-center justify-center">
+          <div className=" absolute top-4 left-10  text-gray-200 mr-auto text-2xl font-semibold">
             Swap
-          </button>
+          </div>
+          <div className=" pt-5 flex items-center flex-col justify-center gap-3">
+            <div className=" relative md:w-full flex items-center bg-transparent border border-slate-700  rounded-2xl px-5">
+              <Image
+                alt=""
+                src={selectedToken1.logo || "/token.png"}
+                width={100}
+                height={100}
+                className=" w-7 h-7"
+              />
+              <input
+                type="number"
+                value={amountOne}
+                onChange={(e) => {
+                  setAmountOne(Number(e.target.value));
+                  getAmountOut(Number(e.target.value), reserveA, reserveB);
+                  setExactAmountIn(true);
+                }}
+                className=" text-2xl py-7 text-gray-200 font-mono bg-transparent pl-3 md:px-5 outline-none"
+                placeholder="0.0"
+              />
+              {!selectedToken1.isNative ? (
+                <button
+                  className="absolute right-4 active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white rounded-md px-3 p-2"
+                  onClick={() => {
+                    setAmountOne(Number(token1Balance?.displayValue));
+                    getAmountOut(
+                      Number(token1Balance?.displayValue),
+                      reserveA,
+                      reserveB
+                    );
+                    setExactAmountIn(true);
+                  }}
+                >
+                  Max
+                </button>
+              ) : (
+                <button
+                  className="absolute right-4 active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white rounded-md px-3 p-2"
+                  onClick={() => {
+                    setAmountOne(Number(nativeBalance?.displayValue));
+                    getAmountOut(
+                      Number(nativeBalance?.displayValue),
+                      reserveA,
+                      reserveB
+                    );
+                    setExactAmountIn(true);
+                  }}
+                >
+                  Max
+                </button>
+              )}
+            </div>
+            <button
+              className=" w-8 px-2 py-0.5 rounded-sm  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto "
+              onClick={() => {
+                selectedToken1 === tokens[0]
+                  ? setSelectedToken1(tokens[2])
+                  : setSelectedToken1(tokens[0]);
+
+                selectedToken2 === tokens[2]
+                  ? setSelectedToken2(tokens[0])
+                  : setSelectedToken2(tokens[2]);
+              }}
+            >
+              ↓
+            </button>
+
+            <div className=" relative md:w-full flex items-center bg-transparent border border-slate-700  rounded-2xl px-5">
+              <Image
+                alt=""
+                src={selectedToken2.logo || tokenImage}
+                width={100}
+                height={100}
+                className=" w-7 h-7"
+              />
+              <input
+                type="number"
+                value={amountTwo}
+                onChange={(e) => {
+                  setAmountTwo(Number(e.target.value));
+                  getAmountIn(Number(e.target.value), reserveA, reserveB);
+                  setExactAmountOut(true);
+                }}
+                className=" text-2xl py-7 text-gray-200 font-mono bg-transparent pl-3 md:px-5 outline-none"
+                placeholder="0.0"
+              />
+              {!selectedToken2.isNative ? (
+                <button
+                  className="absolute right-4 active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white rounded-md px-3 p-2"
+                  onClick={() => {
+                    setAmountTwo(Number(token2Balance?.displayValue));
+                    getAmountIn(
+                      Number(token2Balance?.displayValue),
+                      reserveA,
+                      reserveB
+                    );
+                    setExactAmountOut(true);
+                  }}
+                >
+                  Max
+                </button>
+              ) : (
+                <button
+                  className="absolute right-4 active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white rounded-md px-3 p-2"
+                  onClick={() => {
+                    setAmountTwo(Number(nativeBalance?.displayValue));
+                    getAmountIn(
+                      Number(nativeBalance?.displayValue),
+                      reserveA,
+                      reserveB
+                    );
+                    setExactAmountOut(true);
+                  }}
+                >
+                  Max
+                </button>
+              )}
+            </div>
+          </div>
+
+          {address ? (
+            <button
+              // bg-sky-500 rounded-md active:scale-95 transition-all ease-in-out  bg-gradient-to-r from-[#1b1125] to-black
+              className="w-full py-4 px-6 text-2xl text-white font-semibold bg-[#8a4fc5] rounded-lg transition-all ease-in-out active:scale-95"
+              onClick={handleSubmit}
+              disabled={loading}
+            >
+              {loading ? <Spinner /> : "Execute Swap"}
+            </button>
+          ) : (
+            <ConnectWallet
+              className=" "
+              style={{ padding: "20px 0px", fontSize: "18px", width: "100%" }}
+              theme="dark"
+            />
+          )}
         </div>
       </div>
     </div>
   );
-
-  // return (
-  //   // <div className=" bg-black min-h-screen bg-gradient-to-b from-[#1b1125] to-black">
-  //   <div className="">
-  //     <div className=" relative  flex-col w-full min-h-[80vh] flex items-center justify-center">
-  //       <Image
-  //         src={bg}
-  //         alt="bg"
-  //         className=" absolute top-20 laptop:right-[18vw] desktop:right-[25vw] "
-  //       />
-  //       <div className=" laptop:mt-24 desktop:mt-10 w-[90vw] md:w-auto relative bg-[#212429] backdrop-blur-sm  bg-opacity-30 border border-slate-700 p-10 py-12  rounded-xl flex-col gap-6 flex items-center justify-center">
-  //         <div className=" absolute top-4 left-10  text-gray-200 mr-auto text-2xl font-semibold">
-  //           Swap
-  //         </div>
-  //         <div className=" pt-5 flex items-center flex-col justify-center gap-3">
-  //           <div className=" relative md:w-full flex items-center bg-transparent border border-slate-700  rounded-2xl px-5">
-  //             <Image
-  //               alt=""
-  //               src={tokenImage || "/token.png"}
-  //               width={100}
-  //               height={100}
-  //               className=" w-7 h-7"
-  //             />
-  //             <input
-  //               type="number"
-  //               value={value}
-  //               onChange={(e) => setValue(e.target.value)}
-  //               className=" text-2xl py-7 text-gray-200 font-mono bg-transparent pl-3 md:px-5 outline-none"
-  //               placeholder="0.0"
-  //             />
-  //             {current === type && (
-  //               <button
-  //                 className="absolute right-4 active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white rounded-md px-3 p-2"
-  //                 onClick={() => setValue(max || "0")}
-  //               >
-  //                 Max
-  //               </button>
-  //             )}
-  //           </div>
-  //           {/* <button
-  //             className=" w-8 px-2 py-0.5 rounded-sm  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto "
-  //             onClick={() =>
-  //               currentFrom === "native"
-  //                 ? setCurrentFrom("token")
-  //                 : setCurrentFrom("native")
-  //             }
-  //           >
-  //             ↓
-  //           </button> */}
-
-  //           <div className=" relative md:w-full flex items-center bg-transparent border border-slate-700  rounded-2xl px-5">
-  //             <Image
-  //               alt=""
-  //               src={tokenImage || "/token.png"}
-  //               width={100}
-  //               height={100}
-  //               className=" w-7 h-7"
-  //             />
-  //             <input
-  //               type="number"
-  //               value={value}
-  //               onChange={(e) => setValue(e.target.value)}
-  //               className=" text-2xl py-7 text-gray-200 font-mono bg-transparent pl-3 md:px-5 outline-none"
-  //               placeholder="0.0"
-  //             />
-  //             {current === type && (
-  //               <button
-  //                 className="absolute right-4 active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white rounded-md px-3 p-2"
-  //                 onClick={() => setValue(max || "0")}
-  //               >
-  //                 Max
-  //               </button>
-  //             )}
-  //           </div>
-  //         </div>
-
-  //         {address ? (
-  //           <button
-  //             // bg-sky-500 rounded-md active:scale-95 transition-all ease-in-out  bg-gradient-to-r from-[#1b1125] to-black
-  //             className="w-full py-4 px-6 text-2xl text-white font-semibold bg-[#8a4fc5] rounded-lg transition-all ease-in-out active:scale-95"
-  //             onClick={handleSubmit}
-  //             disabled={loading}
-  //           >
-  //             {loading ? <Spinner /> : "Execute Swap"}
-  //           </button>
-  //         ) : (
-  //           <ConnectWallet
-  //             className=" "
-  //             style={{ padding: "20px 0px", fontSize: "18px", width: "100%" }}
-  //             theme="dark"
-  //           />
-  //         )}
-  //       </div>
-  //     </div>
-  //   </div>
-  // );
 }
