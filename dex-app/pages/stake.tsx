@@ -60,19 +60,6 @@ export default function Stake() {
     }
   }, [address]);
 
-  //   const approveToken = async (tokenAddress: `0x${string}`, amount: number) => {
-  //     try {
-  //       const contract = await sdk?.getContract(tokenAddress);
-  //       const tx = await contract?.call("approve", [
-  //         STAKING_ADDRESS,
-  //         parseEther(amount.toString()),
-  //       ]);
-  //       console.log(tx);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-
   const stakeTokens = async () => {
     try {
       await approveToken({
@@ -124,50 +111,113 @@ export default function Stake() {
     }
   };
 
+  // return (
+  //   <div className="flex flex-col justify-center items-center">
+  //     stake
+  //     <div className="flex flex-col items-center">
+  //       <ConnectWallet
+  //         className=" "
+  //         style={{ padding: "20px 0px", fontSize: "18px", width: "100%" }}
+  //         theme="dark"
+  //       />
+  //       <div>
+  //         <input
+  //           className="text-gray-200 outline-double"
+  //           onChange={(e) => setInputAmount(Number(e.target.value))}
+  //         ></input>
+  //         <br />
+  //         <button
+  //           className="text-white font-semibold bg-[#8a4fc5]"
+  //           onClick={stakeTokens}
+  //         >
+  //           Supply
+  //         </button>
+  //       </div>
+  //       <br />
+  //       <div>
+  //         <input
+  //           className="text-gray-200 outline-double"
+  //           onChange={(e) => setWithdrawAmount(Number(e.target.value))}
+  //         ></input>
+  //         <br />
+  //         <button
+  //           className="text-white font-semibold bg-[#8a4fc5]"
+  //           onClick={withdraw}
+  //         >
+  //           Withdraw
+  //         </button>
+  //       </div>
+  //       <br />
+  //       <div>
+  //         <br />
+  //         <button
+  //           className="text-white font-semibold bg-[#8a4fc5]"
+  //           onClick={redeemRewards}
+  //         >
+  //           Reedem
+  //         </button>
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
+
   return (
-    <div className="flex flex-col justify-center items-center">
-      stake
-      <div className="flex flex-col items-center">
-        <ConnectWallet
-          className=" "
-          style={{ padding: "20px 0px", fontSize: "18px", width: "100%" }}
-          theme="dark"
-        />
-        <div>
-          <input
-            className="text-gray-200 outline-double"
-            onChange={(e) => setInputAmount(Number(e.target.value))}
-          ></input>
-          <br />
-          <button
-            className="text-white font-semibold bg-[#8a4fc5]"
-            onClick={stakeTokens}
-          >
-            Supply
-          </button>
+    <div className=" min-h-screen  pt-48 flex items-start justify-center">
+      <div className=" grid grid-cols-12 gap-y-6 gap-x-12">
+        <div className="col-span-12 items-center justify-center flex">
+          <select className=" laptop:min-w-[400px] text-center py-5 px-8 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white">
+            <option>Staking ERC20</option>
+          </select>
         </div>
-        <br />
-        <div>
-          <input
-            className="text-gray-200 outline-double"
-            onChange={(e) => setWithdrawAmount(Number(e.target.value))}
-          ></input>
-          <br />
-          <button
-            className="text-white font-semibold bg-[#8a4fc5]"
-            onClick={withdraw}
-          >
-            Withdraw
-          </button>
+        <div className=" mt-2 col-span-6 flex flex-col items-center justify-center gap-8 ">
+          <div className=" py-6 px-10 laptop:min-w-[420px] flex flex-col items-stretch justify-center gap-3 text-white border border-gray-400 rounded-md ">
+            <div>Available to Stake: {stakingTokenBalance?.displayValue}</div>
+            <input
+              placeholder="0"
+              type="number"
+              className=" bg-transparent border border-gray-400 px-3 py-2 rounded-md text-white outline-none"
+              onChange={(e) => setInputAmount(Number(e.target.value))}
+            />
+            <button
+              onClick={stakeTokens}
+              className=" mt-1 w-full border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto "
+            >
+              Stake
+            </button>
+          </div>
         </div>
-        <br />
-        <div>
-          <br />
+        <div className=" col-span-6 flex flex-col items-center justify-center gap-8 ">
+          <div className=" py-6 px-10 laptop:min-w-[420px] flex flex-col items-stretch justify-center gap-3 text-white border border-gray-400 rounded-md ">
+            <div>
+              Staked:{" "}
+              {stakingInfo
+                ? formatEther(stakingInfo._tokensStaked.toString())
+                : 0}
+            </div>
+            <input
+              placeholder="0"
+              type="number"
+              className=" bg-transparent border border-gray-400 px-3 py-2 rounded-md text-white outline-none"
+              onChange={(e) => setWithdrawAmount(Number(e.target.value))}
+            />
+            <button
+              onClick={withdraw}
+              className=" mt-1 w-full border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto "
+            >
+              Unstake
+            </button>
+          </div>
+        </div>
+        <div className="col-span-12 items-center justify-center flex flex-col  text-white">
+          <div>
+            Rewards Claimable:{" "}
+            {stakingInfo ? formatEther(stakingInfo._rewards.toString()) : 0}
+          </div>
           <button
-            className="text-white font-semibold bg-[#8a4fc5]"
             onClick={redeemRewards}
+            className=" laptop:min-w-[300px] mt-3 border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto "
           >
-            Reedem
+            Claim Rewards
           </button>
         </div>
       </div>
