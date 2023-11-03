@@ -11,6 +11,13 @@ import {
 import React from "react";
 import { POOL_DATA_PROVIDER_ADDRESS } from "@/const/details";
 import { ReserveDataType, loanTokens } from "@/const/tokens";
+interface Data {
+  token: string;
+  price: string;
+  change: string;
+  tvl: string;
+  volume: string;
+}
 
 export default function TokenList() {
   const [assetsInfo, setAssetsInfo] = useState<ReserveDataType[]>();
