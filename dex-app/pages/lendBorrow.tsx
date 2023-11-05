@@ -9,6 +9,7 @@ import {
   parseUnits,
 } from "ethers/lib/utils";
 import {
+  Web3Button,
   useAddress,
   useContract,
   useContractRead,
@@ -422,13 +423,14 @@ export default function LendBorrow() {
                 setWithdrawAmount(Number(e.target.value));
               }}
             />
-            <button
+            <Web3Button
+              contractAddress={POOL_ADDRESS}
               type="button"
               className="text-white w-full  mt-4 bg-[#8a4fc5]  text-md font-fredoka active:bg-[#b49af9]  font-medium rounded-sm px-5 py-2.5 mb-2"
-              onClick={() => withdrawToken()}
+              action={() => withdrawToken()}
             >
               Submit WithDraw
-            </button>
+            </Web3Button>
           </div>
           <div className={`${toggleRepay ? "visible" : "hidden"} `}>
             <input
@@ -441,13 +443,14 @@ export default function LendBorrow() {
                 setRepayAmount(Number(e.target.value));
               }}
             />
-            <button
+            <Web3Button
+              contractAddress={POOL_ADDRESS}
               type="button"
               className="text-white w-full  mt-4 bg-[#8a4fc5]  text-md font-fredoka active:bg-[#b49af9]  font-medium rounded-sm px-5 py-2.5 mb-2"
-              onClick={() => repayToken()}
+              action={() => repayToken()}
             >
               Submit Repay
-            </button>
+            </Web3Button>
           </div>
 
           <div className={`${toggleSupply ? "visible" : "hidden"} `}>
@@ -461,13 +464,14 @@ export default function LendBorrow() {
                 setSupplyAmount(Number(e.target.value));
               }}
             />
-            <button
+            <Web3Button
+              contractAddress={POOL_ADDRESS}
               type="button"
               className="text-white w-full  mt-4 bg-[#8a4fc5]  text-md font-fredoka active:bg-[#b49af9]  font-medium rounded-sm px-5 py-2.5 mb-2"
-              onClick={() => supplyToken()}
+              action={() => supplyToken()}
             >
               Submit Supply
-            </button>
+            </Web3Button>
           </div>
           <div className={`${toggleBorrow ? "visible" : "hidden"} `}>
             <input
@@ -480,13 +484,14 @@ export default function LendBorrow() {
                 setBorrowAmount(Number(e.target.value));
               }}
             />
-            <button
+            <Web3Button
+              contractAddress={POOL_ADDRESS}
               type="button"
               className="text-white w-full  mt-4 bg-[#8a4fc5]  text-md font-fredoka active:bg-[#b49af9]  font-medium rounded-sm px-5 py-2.5 mb-2"
-              onClick={() => borrowToken()}
+              action={() => borrowToken()}
             >
               Submit Borrow
-            </button>
+            </Web3Button>
           </div>
         </div>
         {loading && <Spinner />}

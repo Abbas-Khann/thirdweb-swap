@@ -1,6 +1,7 @@
 import React from "react";
 import {
   ConnectWallet,
+  Web3Button,
   toEther,
   toWei,
   useAddress,
@@ -462,7 +463,7 @@ export default function Swap() {
             </div>
           </div>
 
-          {address ? (
+          {/* {address ? (
             <button
               // bg-sky-500 rounded-md active:scale-95 transition-all ease-in-out  bg-gradient-to-r from-[#1b1125] to-black
               className="w-full py-4 px-6 text-2xl text-white font-semibold bg-[#8a4fc5] rounded-lg transition-all ease-in-out active:scale-95"
@@ -477,7 +478,15 @@ export default function Swap() {
               style={{ padding: "20px 0px", fontSize: "18px", width: "100%" }}
               theme="dark"
             />
-          )}
+          )} */}
+          <Web3Button
+            contractAddress={SWAP_ROUTER_ADDRESS}
+            // bg-sky-500 rounded-md active:scale-95 transition-all ease-in-out  bg-gradient-to-r from-[#1b1125] to-black
+            className="w-full py-4 px-6 text-2xl text-white font-semibold bg-[#8a4fc5] rounded-lg transition-all ease-in-out active:scale-95"
+            action={handleSubmit}
+          >
+            Execute Swap
+          </Web3Button>
         </div>
       </div>
     </div>

@@ -131,7 +131,10 @@ export default function Stake() {
         </div>
         <div className=" mt-2 col-span-6 flex flex-col items-center justify-center gap-8 ">
           <div className=" py-6 px-10 laptop:min-w-[420px] flex flex-col items-stretch justify-center gap-3 text-white border border-gray-400 rounded-md ">
-            <div>Available to Stake: {stakingTokenBalance?.displayValue}</div>
+            <div>
+              Available to Stake:{" "}
+              {stakingTokenBalance?.displayValue.slice(0, 7)}
+            </div>
             <input
               placeholder="0"
               type="number"
@@ -154,7 +157,7 @@ export default function Stake() {
             <div>
               Staked:{" "}
               {stakingInfo
-                ? formatEther(stakingInfo._tokensStaked.toString())
+                ? formatEther(stakingInfo._tokensStaked.toString()).slice(0, 7)
                 : 0}
             </div>
             <input
@@ -176,14 +179,17 @@ export default function Stake() {
         <div className="col-span-12 items-center justify-center flex flex-col  text-white">
           <div>
             Rewards Claimable:{" "}
-            {stakingInfo ? formatEther(stakingInfo._rewards.toString()) : 0}
+            {stakingInfo
+              ? formatEther(stakingInfo._rewards.toString()).slice(0, 7)
+              : 0}
           </div>
-          <button
-            onClick={redeemRewards}
+          <Web3Button
+            contractAddress={STAKING_ADDRESS}
+            action={redeemRewards}
             className=" laptop:min-w-[300px] mt-3 border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto "
           >
             Claim Rewards
-          </button>
+          </Web3Button>
         </div>
         {loading ? <a>Processing Txs...</a> : <a>Waiting ...</a>}
       </div>
