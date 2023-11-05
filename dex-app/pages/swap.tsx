@@ -32,6 +32,7 @@ import { TokenType, tokens } from "@/const/tokens";
 import { Spinner } from "@chakra-ui/react";
 import Image from "next/image";
 import bg from "../assets/bg.png";
+import toast from "react-hot-toast";
 
 export default function Swap() {
   const sdk = useSDK();
@@ -139,19 +140,23 @@ export default function Swap() {
     valueOutMin: number,
     path: `0x${string}`[]
   ) => {
-    setLoading(true);
-    await approveToken(selectedToken1, valueIn);
-    const deadline = getDeadline();
+    try {
+      setLoading(true);
+      await approveToken(selectedToken1, valueIn);
+      const deadline = getDeadline();
 
-    const tx = await routerContract?.call("swapExactTokensForTokens", [
-      parseUnits(valueIn.toString(), selectedToken1.decimals),
-      parseUnits(valueOutMin.toString(), selectedToken2.decimals),
-      path,
-      address,
-      deadline,
-    ]);
-    console.log(tx);
-    setLoading(false);
+      const tx = await routerContract?.call("swapExactTokensForTokens", [
+        parseUnits(valueIn.toString(), selectedToken1.decimals),
+        parseUnits(valueOutMin.toString(), selectedToken2.decimals),
+        path,
+        address,
+        deadline,
+      ]);
+      console.log(tx);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const swapTokensForExactTokens = async (
@@ -159,22 +164,26 @@ export default function Swap() {
     valueInMax: number,
     path: `0x${string}`[]
   ) => {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    await approveToken(selectedToken1, valueInMax);
-    const deadline = getDeadline();
+      await approveToken(selectedToken1, valueInMax);
+      const deadline = getDeadline();
 
-    const tx = await routerContract?.call("swapTokensForExactTokens", [
-      parseUnits(valueOut.toString(), selectedToken2.decimals),
-      parseUnits(valueInMax.toString(), selectedToken1.decimals),
+      const tx = await routerContract?.call("swapTokensForExactTokens", [
+        parseUnits(valueOut.toString(), selectedToken2.decimals),
+        parseUnits(valueInMax.toString(), selectedToken1.decimals),
 
-      path,
-      address,
-      deadline,
-    ]);
+        path,
+        address,
+        deadline,
+      ]);
 
-    console.log(tx);
-    setLoading(false);
+      console.log(tx);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const swapETHForExactTokens = async (
@@ -182,22 +191,26 @@ export default function Swap() {
     path: `0x${string}`[],
     valueETH: number
   ) => {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const deadline = getDeadline();
+      const deadline = getDeadline();
 
-    const tx = await routerContract?.call(
-      "swapETHForExactTokens",
-      [
-        parseUnits(valueOut.toString(), selectedToken2.decimals),
-        path,
-        address,
-        deadline,
-      ],
-      { value: parseEther(valueETH.toString()) }
-    );
-    console.log(tx);
-    setLoading(false);
+      const tx = await routerContract?.call(
+        "swapETHForExactTokens",
+        [
+          parseUnits(valueOut.toString(), selectedToken2.decimals),
+          path,
+          address,
+          deadline,
+        ],
+        { value: parseEther(valueETH.toString()) }
+      );
+      console.log(tx);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const swapExactETHForTokens = async (
@@ -205,22 +218,31 @@ export default function Swap() {
     valueOutMin: number,
     path: `0x${string}`[]
   ) => {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const deadline = getDeadline();
+      const deadline = getDeadline();
 
-    const tx = await routerContract?.call(
-      "swapExactETHForTokens",
-      [
-        parseUnits(valueOutMin.toString(), selectedToken2.decimals),
-        path,
-        address,
-        deadline,
-      ],
-      { value: parseEther(valueIn.toString()) }
-    );
-    console.log(tx);
-    setLoading(false);
+      const tx = await routerContract?.call(
+        "swapExactETHForTokens",
+        [
+          parseUnits(valueOutMin.toString(), selectedToken2.decimals),
+          path,
+          address,
+          deadline,
+        ],
+        { value: parseEther(valueIn.toString()) }
+      );
+      console.log(tx);
+      setLoading(false);
+    } catch (error) {
+      // toast.error(`${error}`, {
+      //   style: {
+      //     minWidth: "500px",
+      //   },
+      // });
+      console.log(error);
+    }
   };
 
   const swapExactTokensForETH = async (
@@ -228,20 +250,24 @@ export default function Swap() {
     path: `0x${string}`[],
     valueOutMin: number
   ) => {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    await approveToken(selectedToken1, valueIn);
-    const deadline = getDeadline();
+      await approveToken(selectedToken1, valueIn);
+      const deadline = getDeadline();
 
-    const tx = await routerContract?.call("swapExactTokensForETH", [
-      parseUnits(valueIn.toString(), selectedToken1.decimals),
-      parseUnits(valueOutMin.toString(), selectedToken2.decimals),
-      path,
-      address,
-      deadline,
-    ]);
-    console.log(tx);
-    setLoading(false);
+      const tx = await routerContract?.call("swapExactTokensForETH", [
+        parseUnits(valueIn.toString(), selectedToken1.decimals),
+        parseUnits(valueOutMin.toString(), selectedToken2.decimals),
+        path,
+        address,
+        deadline,
+      ]);
+      console.log(tx);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const swapTokensForExactETH = async (
@@ -249,21 +275,25 @@ export default function Swap() {
     path: `0x${string}`[],
     valueIn: number
   ) => {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    // approve tokens to be sent
-    await approveToken(selectedToken1, valueIn);
-    const deadline = getDeadline();
+      // approve tokens to be sent
+      await approveToken(selectedToken1, valueIn);
+      const deadline = getDeadline();
 
-    const tx = await routerContract?.call("swapTokensForExactETH", [
-      parseUnits(valueOut.toString(), selectedToken2.decimals),
-      parseUnits(valueIn.toString(), selectedToken1.decimals),
-      path,
-      address,
-      deadline,
-    ]);
-    console.log(tx);
-    setLoading(false);
+      const tx = await routerContract?.call("swapTokensForExactETH", [
+        parseUnits(valueOut.toString(), selectedToken2.decimals),
+        parseUnits(valueIn.toString(), selectedToken1.decimals),
+        path,
+        address,
+        deadline,
+      ]);
+      console.log(tx);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const getReserves = async (tokenA: TokenType, tokenB: TokenType) => {
@@ -467,7 +497,9 @@ export default function Swap() {
             <button
               // bg-sky-500 rounded-md active:scale-95 transition-all ease-in-out  bg-gradient-to-r from-[#1b1125] to-black
               className="w-full py-4 px-6 text-2xl text-white font-semibold bg-[#8a4fc5] rounded-lg transition-all ease-in-out active:scale-95"
-              onClick={handleSubmit}
+              onClick={() => {
+                toast.success("Completed");
+              }}
               disabled={loading}
             >
               {loading ? <Spinner /> : "Execute Swap"}
@@ -484,6 +516,11 @@ export default function Swap() {
             // bg-sky-500 rounded-md active:scale-95 transition-all ease-in-out  bg-gradient-to-r from-[#1b1125] to-black
             className="w-full py-4 px-6 text-2xl text-white font-semibold bg-[#8a4fc5] rounded-lg transition-all ease-in-out active:scale-95"
             action={handleSubmit}
+            onSuccess={(result) => toast.success(`${result}`)}
+            onError={(error) => {
+              toast.error(`${error}`);
+              console.log(error);
+            }}
           >
             Execute Swap
           </Web3Button>

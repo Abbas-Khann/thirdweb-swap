@@ -468,7 +468,9 @@ export default function Pool() {
                 <tr className=" text-sm text-center border-b border-gray-600 ">
                   <td className="px-6 py-4">{position?.token1.name}</td>
                   <td className="px-6 py-4">{position?.token2.name}</td>
-                  <td className="px-6 py-4">{position?.liquidtyAmount}</td>
+                  <td className="px-6 py-4">
+                    {position?.liquidtyAmount.toFixed(7)}
+                  </td>
                   <td className="px-6 py-4 space-x-3">
                     <input
                       placeholder="0"

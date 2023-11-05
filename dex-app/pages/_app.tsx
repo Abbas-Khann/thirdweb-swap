@@ -17,6 +17,7 @@ import {
   smartWallet,
 } from "@thirdweb-dev/react";
 import { AppProps } from "next/app";
+import { Toaster } from "react-hot-toast";
 
 const smartWalletOptions = {
   factoryAddress: "0x97EA491FA1D5d3f08C7AECcF2C6b231A8ADd66a0",
@@ -59,6 +60,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <div className=" relative z-50 ">
           <Navbar />
         </div>
+        <Toaster position="bottom-center" reverseOrder={false} />
         <div className=" relative min-h-screen">
           <Component {...pageProps} />
         </div>

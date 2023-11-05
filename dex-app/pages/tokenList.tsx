@@ -169,10 +169,16 @@ export default function TokenList() {
                   className=" text-sm text-center border-b border-gray-600 "
                 >
                   <td className="px-6 pl-12 py-4">{row.assetName}</td>
-                  <td className="px-6 py-4">{row.totalSupply}</td>
-                  <td className="px-6 py-4">{row.liquidityRate}</td>
-                  <td className="px-6 py-4">{row.borrowRateStable}</td>
-                  <td className="px-6 pr-12 py-4">{row.borrowRateVariable}</td>
+                  <td className="px-6 py-4">{row.totalSupply.toFixed(2)}</td>
+                  <td className="px-6 py-4">
+                    {row.liquidityRate.toFixed(4)} %
+                  </td>
+                  <td className="px-6 py-4">
+                    {row.borrowRateStable.toFixed(2)} %
+                  </td>
+                  <td className="px-6 pr-12 py-4">
+                    {row.borrowRateVariable.toFixed(2)} %
+                  </td>
                 </tr>
               ))
             ) : (
