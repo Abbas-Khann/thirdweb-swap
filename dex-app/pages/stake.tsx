@@ -2,6 +2,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import {
+  Web3Button,
   useAddress,
   useContract,
   useContractRead,
@@ -137,12 +138,15 @@ export default function Stake() {
               className=" bg-transparent border border-gray-400 px-3 py-2 rounded-md text-white outline-none"
               onChange={(e) => setInputAmount(Number(e.target.value))}
             />
-            <button
-              onClick={stakeTokens}
+            <Web3Button
+              action={stakeTokens}
+              contractAddress={STAKING_ADDRESS}
+              onSuccess={(result) => alert("Success!")}
+              // onClick={stakeTokens}z
               className=" mt-1 w-full border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto "
             >
               Stake
-            </button>
+            </Web3Button>
           </div>
         </div>
         <div className=" col-span-6 flex flex-col items-center justify-center gap-8 ">
@@ -159,12 +163,14 @@ export default function Stake() {
               className=" bg-transparent border border-gray-400 px-3 py-2 rounded-md text-white outline-none"
               onChange={(e) => setWithdrawAmount(Number(e.target.value))}
             />
-            <button
-              onClick={withdraw}
+            <Web3Button
+              action={stakeTokens}
+              contractAddress={STAKING_ADDRESS}
+              onSuccess={(result) => alert("Success!")}
               className=" mt-1 w-full border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto "
             >
               Unstake
-            </button>
+            </Web3Button>
           </div>
         </div>
         <div className="col-span-12 items-center justify-center flex flex-col  text-white">
@@ -179,7 +185,7 @@ export default function Stake() {
             Claim Rewards
           </button>
         </div>
-        {loading && <Spinner />}
+        {loading ? <a>Processing Txs...</a> : <a>Waiting ...</a>}
       </div>
     </div>
   );
