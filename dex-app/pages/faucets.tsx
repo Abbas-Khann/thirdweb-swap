@@ -7,10 +7,9 @@ import {
   useContractRead,
   useContractWrite,
   useSDK,
-  useTokenSupply,
 } from "@thirdweb-dev/react";
 import React from "react";
-import { POOL_DATA_PROVIDER_ADDRESS, STAKING_TOKEN } from "@/const/details";
+import { POOL_DATA_PROVIDER_ADDRESS } from "@/const/details";
 import { ReserveDataType, loanTokens } from "@/const/tokens";
 interface Data {
   token: string;
@@ -30,15 +29,6 @@ export default function TokenList() {
     POOL_DATA_PROVIDER_ADDRESS,
     "custom"
   );
-  const { contract: stakingTokenContract } = useContract(
-    STAKING_TOKEN,
-    "token"
-  );
-  const {
-    data: stakingTokenSupply,
-    isLoading,
-    error,
-  } = useTokenSupply(stakingTokenContract);
 
   const { data: allReserveTokens } = useContractRead(
     poolDataProviderContract,
@@ -169,13 +159,10 @@ export default function TokenList() {
               <th scope="col" className="px-6 py-3">
                 Borrow Rate Variable
               </th>
-              <th scope="col" className="px-6 py-3">
-                Faucets
-              </th>
             </tr>
           </thead>
           <tbody>
-            {assetsInfo &&
+            {assetsInfo ? (
               assetsInfo.map((row, idx) => (
                 <tr
                   key={idx}
@@ -192,29 +179,11 @@ export default function TokenList() {
                   <td className="px-6 pr-12 py-4">
                     {row.borrowRateVariable.toFixed(2)} %
                   </td>
-                  <td className="px-6 pr-12 py-4">
-                    <a href="https://app.aave.com/faucet/" target="_blank">
-                      <button className="bg-[#8a4fc5] rounded-lg font-semibold w-full text-white">
-                        Get ↗
-                      </button>
-                    </a>
-                  </td>
                 </tr>
-              ))}
-            <tr className=" text-sm text-center border-b border-gray-600 ">
-              <td className="px-6 pl-12 py-4">Staked ERC20</td>
-              <td className="px-6 py-4">
-                {Number(stakingTokenSupply?.displayValue).toFixed(2)}
-              </td>
-              <td className="px-6 py-4">N/A</td>
-              <td className="px-6 py-4">N/A</td>
-              <td className="px-6 pr-12 py-4">N/A</td>
-              <td className="px-6 pr-12 py-4">
-                <button className="bg-[#8a4fc5] rounded-lg font-semibold w-full text-white">
-                  Get
-                </button>
-              </td>
-            </tr>
+              ))
+            ) : (
+              <div className="text-sm text-center">No Info </div>
+            )}
           </tbody>
         </table>
         {loading && <Spinner />}
