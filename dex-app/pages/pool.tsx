@@ -15,6 +15,7 @@ import { TokenType, tokenLink, tokens } from "@/const/tokens";
 import { useAddress, useContract, useSDK } from "@thirdweb-dev/react";
 import { PositionType, TokenPairType, tokenpairs } from "@/const/pair";
 import { Spinner } from "@chakra-ui/react";
+import toast from "react-hot-toast";
 
 export default function Pool() {
   const [selectedToken1, setSelectedToken1] = useState(tokens[0]);
@@ -68,7 +69,7 @@ export default function Pool() {
   const approveToken = async (token: TokenType, amount: number) => {
     try {
       setLoading(true);
-
+      toast.loading(`Approving Tokens ....`);
       const contract = await sdk?.getContract(token.address);
       const data = await contract?.call("allowance", [
         address,
@@ -83,9 +84,12 @@ export default function Pool() {
         ]);
         console.log(tx);
       }
+      toast.dismiss();
+      toast.success(`Successfully Approved`);
       setLoading(false);
-    } catch (error) {
+    } catch (error: any) {
       setLoading(false);
+      toast.error(`${error.reason}`);
 
       console.log(error);
     }
@@ -103,6 +107,7 @@ export default function Pool() {
       if (tokenA && tokenB && valueOne && valueTwo && address) {
         await approveToken(tokenA, valueOne);
         await approveToken(tokenB, valueTwo);
+        toast.loading("Adding Token Liquidity ....");
 
         const _deadline = getDeadline();
         const _addLiquidity = await routerContract?.call("addLiquidity", [
@@ -117,14 +122,15 @@ export default function Pool() {
         ]);
         // setLoading(true);
         console.log(_addLiquidity);
-
+        toast.dismiss();
+        toast.success(`Liquidity Successfully added`);
         // setLoading(false);
       } else {
       }
       setLoading(false);
-    } catch (err) {
+    } catch (err: any) {
       setLoading(false);
-
+      toast.error(`${err.reason}`);
       // alert shall be changed to toast.error(err.reason) once kushagra adds it
       //   alert(err.reason);
       console.error(err);
@@ -141,6 +147,7 @@ export default function Pool() {
 
       if (token && valueToken && valueETH && address) {
         await approveToken(token, valueToken);
+        toast.loading("Adding Token Liquidity ....");
 
         const _deadline = getDeadline();
         const _addLiquidity = await routerContract?.call(
@@ -155,14 +162,17 @@ export default function Pool() {
           ],
           { value: parseEther(valueETH.toString()) }
         );
+        toast.dismiss();
+        toast.success(`Liquidity Successfully added`);
         // setLoading(true);
         console.log(_addLiquidity);
         setLoading(false);
       } else {
       }
       setLoading(false);
-    } catch (err) {
+    } catch (err: any) {
       setLoading(false);
+      toast.error(`${err.reason}`);
 
       //   alert(err.reason);
       console.error(err);
@@ -231,6 +241,8 @@ export default function Pool() {
 
       if (addressTokenA && addressTokenB && liquidityAmount) {
         const _deadline = getDeadline();
+        toast.loading("Removing Token Liquidity ....");
+
         const _removeLiquidity = await routerContract?.call("removeLiquidity", [
           addressTokenA,
           addressTokenB,
@@ -242,11 +254,14 @@ export default function Pool() {
         ]);
         // setLoading(true);
         console.log(_removeLiquidity);
+        toast.dismiss();
+        toast.success(`Liquidity Successfully removed`);
         // setLoading(false);
       } else {
       }
-    } catch (err) {
+    } catch (err: any) {
       setLoading(false);
+      toast.error(`${err.reason}`);
 
       // alert shall be changed to toast.error(err.reason) once kushagra adds it
       //   alert(err.reason);
@@ -263,6 +278,8 @@ export default function Pool() {
 
       if (addressTokenA && liquidityAmount) {
         const _deadline = getDeadline();
+        toast.loading("Removing Token Liquidity ....");
+
         const _removeLiquidity = await routerContract?.call(
           "removeLiquidityETH",
           [
@@ -276,12 +293,15 @@ export default function Pool() {
         );
         // setLoading(true);
         console.log(_removeLiquidity);
+        toast.dismiss();
+        toast.success(`Liquidity Successfully removed`);
         setLoading(false);
       } else {
       }
-    } catch (err) {
+    } catch (err: any) {
       //   alert(err.reason);
       setLoading(false);
+      toast.error(`${err.reason}`);
 
       console.error(err);
     }

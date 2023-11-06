@@ -1,7 +1,6 @@
 import React from "react";
 import {
   ConnectWallet,
-  Web3Button,
   toEther,
   toWei,
   useAddress,
@@ -92,10 +91,11 @@ export default function Swap() {
         ]);
         console.log(tx);
       }
+      toast.success(`Token Approved`);
       setLoading(false);
-    } catch (error) {
+    } catch (error: any) {
       setLoading(false);
-
+      toast.error(`${error.reason}`);
       console.log(error);
     }
   };
@@ -142,9 +142,11 @@ export default function Swap() {
   ) => {
     try {
       setLoading(true);
+      toast.loading(`Approving ${valueIn} ${selectedToken1.name} Tokens ....`);
       await approveToken(selectedToken1, valueIn);
       const deadline = getDeadline();
-
+      toast.dismiss();
+      toast.loading("Swapping Tokens ....");
       const tx = await routerContract?.call("swapExactTokensForTokens", [
         parseUnits(valueIn.toString(), selectedToken1.decimals),
         parseUnits(valueOutMin.toString(), selectedToken2.decimals),
@@ -153,8 +155,11 @@ export default function Swap() {
         deadline,
       ]);
       console.log(tx);
+      toast.dismiss();
+      toast.success(`Successfully swapped`);
       setLoading(false);
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(`${error.reason}`);
       console.log(error);
     }
   };
@@ -166,10 +171,13 @@ export default function Swap() {
   ) => {
     try {
       setLoading(true);
-
+      toast.loading(
+        `Approving ${valueInMax} ${selectedToken1.name} Tokens ....`
+      );
       await approveToken(selectedToken1, valueInMax);
       const deadline = getDeadline();
-
+      toast.dismiss();
+      toast.loading("Swapping Tokens ....");
       const tx = await routerContract?.call("swapTokensForExactTokens", [
         parseUnits(valueOut.toString(), selectedToken2.decimals),
         parseUnits(valueInMax.toString(), selectedToken1.decimals),
@@ -178,10 +186,13 @@ export default function Swap() {
         address,
         deadline,
       ]);
-
+      toast.dismiss();
+      toast.success(`Successfully swapped`);
       console.log(tx);
       setLoading(false);
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(`${error.reason}`);
+
       console.log(error);
     }
   };
@@ -195,7 +206,7 @@ export default function Swap() {
       setLoading(true);
 
       const deadline = getDeadline();
-
+      toast.loading("Swapping Tokens ....");
       const tx = await routerContract?.call(
         "swapETHForExactTokens",
         [
@@ -207,8 +218,12 @@ export default function Swap() {
         { value: parseEther(valueETH.toString()) }
       );
       console.log(tx);
+      toast.dismiss();
+      toast.success(`Successfully swapped`);
       setLoading(false);
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(`${error.reason}`);
+
       console.log(error);
     }
   };
@@ -220,6 +235,7 @@ export default function Swap() {
   ) => {
     try {
       setLoading(true);
+      toast.loading("Swapping Tokens ....");
 
       const deadline = getDeadline();
 
@@ -234,13 +250,11 @@ export default function Swap() {
         { value: parseEther(valueIn.toString()) }
       );
       console.log(tx);
+      toast.dismiss();
+      toast.success(`Successfully swapped`);
       setLoading(false);
-    } catch (error) {
-      // toast.error(`${error}`, {
-      //   style: {
-      //     minWidth: "500px",
-      //   },
-      // });
+    } catch (error: any) {
+      toast.error(`${error.reason}`);
       console.log(error);
     }
   };
@@ -252,9 +266,12 @@ export default function Swap() {
   ) => {
     try {
       setLoading(true);
+      toast.loading("Approving Tokens ....");
 
       await approveToken(selectedToken1, valueIn);
       const deadline = getDeadline();
+      toast.dismiss();
+      toast.loading("Swapping Tokens ....");
 
       const tx = await routerContract?.call("swapExactTokensForETH", [
         parseUnits(valueIn.toString(), selectedToken1.decimals),
@@ -264,8 +281,13 @@ export default function Swap() {
         deadline,
       ]);
       console.log(tx);
+      toast.dismiss();
+      toast.success(`Successfully swapped`);
+
       setLoading(false);
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(`${error.reason}`);
+
       console.log(error);
     }
   };
@@ -277,11 +299,13 @@ export default function Swap() {
   ) => {
     try {
       setLoading(true);
+      toast.loading("Approving Tokens ....");
 
       // approve tokens to be sent
       await approveToken(selectedToken1, valueIn);
       const deadline = getDeadline();
-
+      toast.dismiss();
+      toast.loading("Swapping Tokens ....");
       const tx = await routerContract?.call("swapTokensForExactETH", [
         parseUnits(valueOut.toString(), selectedToken2.decimals),
         parseUnits(valueIn.toString(), selectedToken1.decimals),
@@ -290,8 +314,13 @@ export default function Swap() {
         deadline,
       ]);
       console.log(tx);
+      toast.dismiss();
+      toast.success(`Successfully swapped`);
+
       setLoading(false);
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(`${error.reason}`);
+
       console.log(error);
     }
   };
@@ -511,19 +540,18 @@ export default function Swap() {
               theme="dark"
             />
           )} */}
-          <Web3Button
-            contractAddress={SWAP_ROUTER_ADDRESS}
+          <button
             // bg-sky-500 rounded-md active:scale-95 transition-all ease-in-out  bg-gradient-to-r from-[#1b1125] to-black
             className="w-full py-4 px-6 text-2xl text-white font-semibold bg-[#8a4fc5] rounded-lg transition-all ease-in-out active:scale-95"
-            action={handleSubmit}
-            onSuccess={(result) => toast.success(`${result}`)}
-            onError={(error) => {
-              toast.error(`${error}`);
-              console.log(error);
-            }}
+            onClick={handleSubmit}
+            // onSuccess={(result) => toast.success(`${result}`)}
+            // onError={(error) => {
+            //   toast.error(`${error}`);
+            //   console.log(error);
+            // }}
           >
             Execute Swap
-          </Web3Button>
+          </button>
         </div>
       </div>
     </div>

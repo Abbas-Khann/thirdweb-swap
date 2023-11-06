@@ -2,7 +2,6 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import {
-  Web3Button,
   useAddress,
   useContract,
   useContractRead,
@@ -17,6 +16,7 @@ import {
   WETH_ADDRESS,
 } from "@/const/details";
 import { Spinner } from "@chakra-ui/react";
+import toast from "react-hot-toast";
 
 export default function Stake() {
   //   const [selectedToken, setSelectedToken] = useState(tokens[0]);
@@ -63,20 +63,27 @@ export default function Stake() {
   const stakeTokens = async () => {
     try {
       setLoading(true);
-
+      toast.loading(`Approving Tokens ....`);
       await approveToken({
         args: [STAKING_ADDRESS, parseEther(inputAmount.toString())],
       });
+      toast.dismiss();
+      toast.success(`Successfully Approved`);
+      toast.loading("Staking Token ...");
+
       // add the required address
       const _stake = await stakingContract?.call("stake", [
         parseEther(inputAmount.toString()),
       ]);
-      setLoading(true);
+      toast.dismiss();
+      toast.success(`Token Successfully Staked`);
       console.log(_stake);
       setLoading(false);
       // toast.success();
-    } catch (err) {
+    } catch (err: any) {
       // toast.error("")
+      toast.error(`${err.reason}`);
+
       console.error(err);
     }
   };
@@ -87,15 +94,20 @@ export default function Stake() {
       setLoading(true);
 
       if (withdrawAmount) {
+        toast.loading("Withdrawing Token ...");
+
         const _withdraw = await stakingContract?.call("withdraw", [
           parseEther(withdrawAmount.toString()),
         ]);
-        setLoading(true);
+
+        toast.dismiss();
+        toast.success(`Token Successfully wihtdrawn`);
         console.log(_withdraw);
         setLoading(false);
       }
-    } catch (err) {
+    } catch (err: any) {
       setLoading(false);
+      toast.error(`${err.reason}`);
 
       console.error(err);
       // toast.error(err);
@@ -105,15 +117,18 @@ export default function Stake() {
   const redeemRewards = async () => {
     try {
       setLoading(true);
+      toast.loading("Reedeming rewards ...");
 
       // in the param put in the token that was staked
       const _redeemRewards = await stakingContract?.call("claimRewards");
-      setLoading(true);
+      toast.dismiss();
+      toast.success(`Token Successfully reedemed`);
       console.log(_redeemRewards);
       setLoading(false);
       // toast.success("Redeemed rewards")
-    } catch (err) {
+    } catch (err: any) {
       setLoading(false);
+      toast.error(`${err.reason}`);
 
       console.error(err);
       // toast.error(err)
@@ -141,15 +156,12 @@ export default function Stake() {
               className=" bg-transparent border border-gray-400 px-3 py-2 rounded-md text-white outline-none"
               onChange={(e) => setInputAmount(Number(e.target.value))}
             />
-            <Web3Button
-              action={stakeTokens}
-              contractAddress={STAKING_ADDRESS}
-              onSuccess={(result) => alert("Success!")}
-              // onClick={stakeTokens}z
+            <button
+              onClick={stakeTokens}
               className=" mt-1 w-full border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto "
             >
               Stake
-            </Web3Button>
+            </button>
           </div>
         </div>
         <div className=" col-span-6 flex flex-col items-center justify-center gap-8 ">
@@ -166,14 +178,12 @@ export default function Stake() {
               className=" bg-transparent border border-gray-400 px-3 py-2 rounded-md text-white outline-none"
               onChange={(e) => setWithdrawAmount(Number(e.target.value))}
             />
-            <Web3Button
-              action={stakeTokens}
-              contractAddress={STAKING_ADDRESS}
-              onSuccess={(result) => alert("Success!")}
+            <button
+              onClick={stakeTokens}
               className=" mt-1 w-full border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto "
             >
               Unstake
-            </Web3Button>
+            </button>
           </div>
         </div>
         <div className="col-span-12 items-center justify-center flex flex-col  text-white">
@@ -183,13 +193,12 @@ export default function Stake() {
               ? formatEther(stakingInfo._rewards.toString()).slice(0, 7)
               : 0}
           </div>
-          <Web3Button
-            contractAddress={STAKING_ADDRESS}
-            action={redeemRewards}
+          <button
+            onClick={redeemRewards}
             className=" laptop:min-w-[300px] mt-3 border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto "
           >
             Claim Rewards
-          </Web3Button>
+          </button>
         </div>
         {loading ? <a>Processing Txs...</a> : <a>Waiting ...</a>}
       </div>

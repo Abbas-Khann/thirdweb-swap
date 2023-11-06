@@ -9,7 +9,6 @@ import {
   parseUnits,
 } from "ethers/lib/utils";
 import {
-  Web3Button,
   useAddress,
   useContract,
   useContractRead,
@@ -25,6 +24,7 @@ import {
 } from "@/const/tokens";
 import { Select } from "@chakra-ui/react";
 import { Spinner } from "@chakra-ui/react";
+import toast from "react-hot-toast";
 
 export default function LendBorrow() {
   const [selectedToken, setSelectedToken] = useState<TokenType>(loanTokens[0]);
@@ -62,6 +62,7 @@ export default function LendBorrow() {
   ) => {
     try {
       setLoading(true);
+      toast.loading(`Approving Tokens ....`);
 
       const contract = await sdk?.getContract(tokenAddress);
       const tx = await contract?.call("approve", [
@@ -70,8 +71,11 @@ export default function LendBorrow() {
       ]);
       console.log(tx);
       setLoading(false);
-    } catch (error) {
+      toast.dismiss();
+      toast.success(`Successfully Approved`);
+    } catch (error: any) {
       setLoading(false);
+      toast.error(`${error.reason}`);
 
       console.log(error);
     }
@@ -232,6 +236,8 @@ export default function LendBorrow() {
           supplyAmount,
           selectedToken.decimals
         );
+        toast.loading("Supplying Token ...");
+
         // first param takes address of the token and second one takes amount
         const txn = await poolContract?.call("supply", [
           selectedToken.address,
@@ -241,9 +247,12 @@ export default function LendBorrow() {
         ]);
         console.log(txn);
         setLoading(false);
+        toast.dismiss();
+        toast.success(`Token Successfully supplied`);
       }
-    } catch (err) {
+    } catch (err: any) {
       setLoading(false);
+      toast.error(`${err.reason}`);
 
       console.error(err);
     }
@@ -256,6 +265,8 @@ export default function LendBorrow() {
         // const amountWithdraw = getWithdrawalAmount(_amount);
         // we have to check and calculate the total withdraw Amount
         // type(uint).max  for maximum available withdraw
+        toast.loading("Withdrawing Token ...");
+
         const txn = await poolContract?.call("withdraw", [
           selectedToken.address,
           parseUnits(withdrawAmount.toString(), selectedToken.decimals),
@@ -263,9 +274,12 @@ export default function LendBorrow() {
         ]);
         console.log(txn);
         setLoading(false);
+        toast.dismiss();
+        toast.success(`Lended token Withdrawn`);
       }
-    } catch (err) {
+    } catch (err: any) {
       setLoading(false);
+      toast.error(`${err.reason}`);
 
       console.error(err);
     }
@@ -276,6 +290,8 @@ export default function LendBorrow() {
       setLoading(true);
 
       if (borrowAmount) {
+        toast.loading("Borrowing Token ...");
+
         const txn = await poolContract?.call("borrow", [
           selectedToken.address,
           parseUnits(borrowAmount.toString(), selectedToken.decimals),
@@ -285,10 +301,14 @@ export default function LendBorrow() {
         ]);
         console.log(txn);
         setLoading(false);
+        toast.dismiss();
+        toast.success(`Token Borrowed Successfully`);
         // add some toaster i guess
       }
-    } catch (err) {
+    } catch (err: any) {
       setLoading(false);
+      toast.error(`${err.reason}`);
+
       console.error(err);
     }
   };
@@ -305,6 +325,8 @@ export default function LendBorrow() {
           repayAmount,
           selectedToken.decimals
         );
+        toast.loading("Repaying Token debt...");
+
         const txn = await poolContract?.call("repay", [
           selectedToken.address,
           parseUnits(repayAmount.toString(), selectedToken.decimals),
@@ -312,11 +334,13 @@ export default function LendBorrow() {
           address,
         ]);
         console.log(txn);
-
+        toast.dismiss();
+        toast.success(`Token Repaid for the borrowing`);
         setLoading(false);
       }
-    } catch (err) {
+    } catch (err: any) {
       setLoading(false);
+      toast.error(`${err.reason}`);
 
       console.error(err);
     }
@@ -423,14 +447,13 @@ export default function LendBorrow() {
                 setWithdrawAmount(Number(e.target.value));
               }}
             />
-            <Web3Button
-              contractAddress={POOL_ADDRESS}
+            <button
               type="button"
               className="text-white w-full  mt-4 bg-[#8a4fc5]  text-md font-fredoka active:bg-[#b49af9]  font-medium rounded-sm px-5 py-2.5 mb-2"
-              action={() => withdrawToken()}
+              onClick={() => withdrawToken()}
             >
               Submit WithDraw
-            </Web3Button>
+            </button>
           </div>
           <div className={`${toggleRepay ? "visible" : "hidden"} `}>
             <input
@@ -443,14 +466,13 @@ export default function LendBorrow() {
                 setRepayAmount(Number(e.target.value));
               }}
             />
-            <Web3Button
-              contractAddress={POOL_ADDRESS}
+            <button
               type="button"
               className="text-white w-full  mt-4 bg-[#8a4fc5]  text-md font-fredoka active:bg-[#b49af9]  font-medium rounded-sm px-5 py-2.5 mb-2"
-              action={() => repayToken()}
+              onClick={() => repayToken()}
             >
               Submit Repay
-            </Web3Button>
+            </button>
           </div>
 
           <div className={`${toggleSupply ? "visible" : "hidden"} `}>
@@ -464,14 +486,13 @@ export default function LendBorrow() {
                 setSupplyAmount(Number(e.target.value));
               }}
             />
-            <Web3Button
-              contractAddress={POOL_ADDRESS}
+            <button
               type="button"
               className="text-white w-full  mt-4 bg-[#8a4fc5]  text-md font-fredoka active:bg-[#b49af9]  font-medium rounded-sm px-5 py-2.5 mb-2"
-              action={() => supplyToken()}
+              onClick={() => supplyToken()}
             >
               Submit Supply
-            </Web3Button>
+            </button>
           </div>
           <div className={`${toggleBorrow ? "visible" : "hidden"} `}>
             <input
@@ -484,14 +505,13 @@ export default function LendBorrow() {
                 setBorrowAmount(Number(e.target.value));
               }}
             />
-            <Web3Button
-              contractAddress={POOL_ADDRESS}
+            <button
               type="button"
               className="text-white w-full  mt-4 bg-[#8a4fc5]  text-md font-fredoka active:bg-[#b49af9]  font-medium rounded-sm px-5 py-2.5 mb-2"
-              action={() => borrowToken()}
+              onClick={() => borrowToken()}
             >
               Submit Borrow
-            </Web3Button>
+            </button>
           </div>
         </div>
         {loading && <Spinner />}
