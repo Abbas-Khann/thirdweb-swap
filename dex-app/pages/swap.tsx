@@ -414,21 +414,28 @@ export default function Swap() {
             Swap
           </div>
           <div className=" pt-5 flex items-center flex-col justify-center gap-3">
-            <div className=" relative md:w-full flex items-center bg-transparent border border-slate-700  rounded-2xl px-5">
+            <div className="focus:outline-none focus:shadow-outline relative md:w-full flex items-center bg-transparent border border-slate-700  rounded-2xl px-5">
               {/* <select
                 onChange={(e) => setSelectedToken1(tokenLink[e.target.value])}
-                className=" laptop:min-w-[400px] text-center py-5 px-8 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white"
+                className="appearance-none h-12 w-12 text-center rounded-md bg-transparent text-white"
               >
                 {tokens.map((token) => {
                   return (
-                    <option key={token.address} value={token.name}>
-                      <Image
-                        alt=""
-                        src={token.logo || "/token.png"}
-                        width={100}
-                        height={100}
-                        className=" w-7 h-7"
-                      />
+                    <option
+                      // data-thumbnail={token.logo || "/token.png"}
+                      key={token.address}
+                      value={token.name}
+                    >
+                      <div>
+                        <Image
+                          alt={token.name}
+                          src={token.logo || "/token.png"}
+                          width={100}
+                          height={100}
+                          className="w-7 h-7"
+                        />
+                      </div>
+  
                     </option>
                   );
                 })}

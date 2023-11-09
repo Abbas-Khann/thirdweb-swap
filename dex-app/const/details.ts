@@ -8,6 +8,7 @@ export const ACTIVE_CHAIN: Chain = FantomTestnet;
 // Smart Contract Account Factory
 export const FACTORY_ADDRESS: string =
   "0xdd2eaE0BB59D05021503ce1d8B48a91999D5f3C8";
+// 0x97EA491FA1D5d3f08C7AECcF2C6b231A8ADd66a0
 
 export const SWAP_FACTORY_ADDRESS: string =
   "0x93dE60FcAb8C1BA49Ab99AF549C451900073a77b";
