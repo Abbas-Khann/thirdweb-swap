@@ -1,8 +1,11 @@
 import { StaticImageData } from "next/image";
 import eth from "../assets/eth3d.png";
+import ftm from "../assets/ftm3d.png";
 import dai from "../assets/dai3d.png";
 import usdt from "../assets/usdt3d.png";
 import usdc from "../assets/usdc3d.png";
+import aave from "../assets/aave3d.png";
+import sushi from "../assets/aave3d.png";
 
 export interface TokenType {
   name: string;
@@ -15,35 +18,62 @@ export interface TokenType {
 
 export const tokens: TokenType[] = [
   {
-    name: "ETH",
-    symbol: "ETH",
+    name: "FTM",
+    symbol: "FTM",
     isNative: true,
-    address: "0x7853e2642a084Dd60B9c1F73F3Ba3bdcb8B36856",
-    logo: eth,
+    address: "0x2Fa2e7a6dEB7bb51B625336DBe1dA23511914a8A",
+    logo: ftm,
+    decimals: 18,
+  },
+  {
+    name: "DAI",
+    symbol: "DAI",
+    isNative: false,
+    address: "0x77FDe93fEe5fe272dC17d799cb61447431E6Eba2",
+    logo: dai,
     decimals: 18,
   },
   {
     name: "USDT",
     symbol: "USDT",
     isNative: false,
-    address: "0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0",
+    address: "0x9DFf9E93B1e513379cf820504D642c6891d8F7CC",
     logo: usdt,
     decimals: 6,
   },
   {
-    name: "DAI",
-    symbol: "DAI",
+    name: "USDC",
+    symbol: "USDC",
     isNative: false,
-    address: "0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357",
-    logo: dai,
+    address: "0x66F61903D7FEC18048bEc2e792f272cb8B657733",
+    logo: usdt,
+    decimals: 6,
+  },
+  {
+    name: "AAVE",
+    symbol: "AAVE",
+    isNative: false,
+    address: "0x52D800ca262522580CeBAD275395ca6e7598C014",
+    logo: aave,
+    decimals: 18,
+  },
+  {
+    name: "SUSHI",
+    symbol: "SUSHI",
+    isNative: false,
+    address: "0x1fdE0eCc619726f4cD597887C9F3b4c8740e19e2",
+    logo: sushi,
     decimals: 18,
   },
 ];
 
 export const tokenLink: { [id: string]: TokenType } = {
-  ETH: tokens[0],
+  FTM: tokens[0],
   DAI: tokens[1],
   USDT: tokens[2],
+  USDC: tokens[3],
+  AAVE: tokens[4],
+  SUSHI: tokens[5],
 };
 
 export interface ReserveDataType {
@@ -63,32 +93,50 @@ export const loanTokens: TokenType[] = [
     name: "DAI",
     symbol: "DAI",
     isNative: false,
-    address: "0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357",
+    address: "0x77FDe93fEe5fe272dC17d799cb61447431E6Eba2",
     logo: dai,
     decimals: 18,
-  },
-  {
-    name: "USDC",
-    symbol: "USDC",
-    isNative: false,
-    address: "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8",
-    logo: usdc,
-    decimals: 6,
   },
   {
     name: "USDT",
     symbol: "USDT",
     isNative: false,
-    address: "0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0",
+    address: "0x9DFf9E93B1e513379cf820504D642c6891d8F7CC",
     logo: usdt,
     decimals: 6,
+  },
+  {
+    name: "USDC",
+    symbol: "USDC",
+    isNative: false,
+    address: "0x66F61903D7FEC18048bEc2e792f272cb8B657733",
+    logo: usdt,
+    decimals: 6,
+  },
+  {
+    name: "AAVE",
+    symbol: "AAVE",
+    isNative: false,
+    address: "0x52D800ca262522580CeBAD275395ca6e7598C014",
+    logo: aave,
+    decimals: 18,
+  },
+  {
+    name: "SUSHI",
+    symbol: "SUSHI",
+    isNative: false,
+    address: "0x1fdE0eCc619726f4cD597887C9F3b4c8740e19e2",
+    logo: sushi,
+    decimals: 18,
   },
 ];
 
 export const loanTokenLink: { [id: string]: TokenType } = {
   DAI: loanTokens[0],
-  USDC: loanTokens[1],
-  USDT: loanTokens[2],
+  USDT: loanTokens[1],
+  USDC: loanTokens[2],
+  AAVE: loanTokens[3],
+  SUSHI: loanTokens[4],
 };
 
 export interface UserDataType {

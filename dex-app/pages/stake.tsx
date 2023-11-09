@@ -82,6 +82,8 @@ export default function Stake() {
       // toast.success();
     } catch (err: any) {
       // toast.error("")
+      toast.dismiss();
+
       toast.error(`${err.reason}`);
 
       console.error(err);
@@ -107,6 +109,8 @@ export default function Stake() {
       }
     } catch (err: any) {
       setLoading(false);
+      toast.dismiss();
+
       toast.error(`${err.reason}`);
 
       console.error(err);
@@ -129,6 +133,7 @@ export default function Stake() {
     } catch (err: any) {
       setLoading(false);
       toast.error(`${err.reason}`);
+      toast.dismiss();
 
       console.error(err);
       // toast.error(err)

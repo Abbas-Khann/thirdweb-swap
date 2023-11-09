@@ -25,6 +25,7 @@ import {
 import { Select } from "@chakra-ui/react";
 import { Spinner } from "@chakra-ui/react";
 import toast from "react-hot-toast";
+import { AAVE_POOL_ABI } from "@/const/abi";
 
 export default function LendBorrow() {
   const [selectedToken, setSelectedToken] = useState<TokenType>(loanTokens[0]);
@@ -44,7 +45,7 @@ export default function LendBorrow() {
 
   const address = useAddress();
   const sdk = useSDK();
-  const { contract: poolContract } = useContract(POOL_ADDRESS, "custom");
+  const { contract: poolContract } = useContract(POOL_ADDRESS, AAVE_POOL_ABI);
   const { data: userAccountData } = useContractRead(
     poolContract,
     "getUserAccountData",
@@ -65,17 +66,23 @@ export default function LendBorrow() {
       toast.loading(`Approving Tokens ....`);
 
       const contract = await sdk?.getContract(tokenAddress);
-      const tx = await contract?.call("approve", [
-        POOL_ADDRESS,
-        parseUnits(amount.toString(), decimals),
-      ]);
-      console.log(tx);
+      const data = await contract?.call("allowance", [address, POOL_ADDRESS]);
+      const approvedAmount = formatUnits(data, decimals);
+
+      if (approvedAmount <= amount.toString()) {
+        const tx = await contract?.call("approve", [
+          POOL_ADDRESS,
+          parseUnits(amount.toString(), decimals),
+        ]);
+        console.log(tx);
+      }
       setLoading(false);
       toast.dismiss();
       toast.success(`Successfully Approved`);
     } catch (error: any) {
       setLoading(false);
       toast.error(`${error.reason}`);
+      toast.dismiss();
 
       console.log(error);
     }
@@ -149,7 +156,7 @@ export default function LendBorrow() {
         ),
       };
       console.log(_userData);
-
+      setUserData(_userData);
       // full account stats together
       // console.log(
       //   "Liquidity Rate",
@@ -252,6 +259,8 @@ export default function LendBorrow() {
       }
     } catch (err: any) {
       setLoading(false);
+      toast.dismiss();
+
       toast.error(`${err.reason}`);
 
       console.error(err);
@@ -279,6 +288,7 @@ export default function LendBorrow() {
       }
     } catch (err: any) {
       setLoading(false);
+      toast.dismiss();
       toast.error(`${err.reason}`);
 
       console.error(err);
@@ -307,6 +317,8 @@ export default function LendBorrow() {
       }
     } catch (err: any) {
       setLoading(false);
+      toast.dismiss();
+
       toast.error(`${err.reason}`);
 
       console.error(err);
@@ -340,6 +352,8 @@ export default function LendBorrow() {
       }
     } catch (err: any) {
       setLoading(false);
+      toast.dismiss();
+
       toast.error(`${err.reason}`);
 
       console.error(err);

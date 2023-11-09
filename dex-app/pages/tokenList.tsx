@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { formatEther, formatUnits, parseEther } from "ethers/lib/utils";
 // import { tokens } from "@/const/tokens";
 import {
+  toWei,
+  useActiveClaimConditionForWallet,
   useAddress,
+  useClaimerProofs,
   useContract,
   useContractRead,
   useContractWrite,
@@ -20,6 +23,8 @@ interface Data {
   volume: string;
 }
 import { Spinner } from "@chakra-ui/react";
+import toast from "react-hot-toast";
+import { ethers } from "ethers";
 
 export default function TokenList() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -32,8 +37,23 @@ export default function TokenList() {
   );
   const { contract: stakingTokenContract } = useContract(
     STAKING_TOKEN,
-    "token"
+    "token-drop"
   );
+
+  const { data: claimConditions } = useActiveClaimConditionForWallet(
+    stakingTokenContract,
+    address
+  );
+  // const { data: claimerProofs } = useClaimerProofs(
+  //   stakingTokenContract,
+  //   address
+  // );
+
+  const { mutateAsync: claim } = useContractWrite(
+    stakingTokenContract,
+    "claim"
+  );
+
   const {
     data: stakingTokenSupply,
     isLoading,
@@ -59,12 +79,12 @@ export default function TokenList() {
     assetName: string
   ): Promise<ReserveDataType | undefined> => {
     try {
-      console.log(assetAddress);
+      // console.log(assetAddress);
       const reserveData = await poolDataProviderContract?.call(
         "getReserveData",
         [assetAddress]
       );
-      console.log(reserveData);
+      // console.log(reserveData);
 
       const _totalDebt =
         Number(formatUnits(reserveData.totalStableDebt.toString(), decimal)) +
@@ -90,7 +110,7 @@ export default function TokenList() {
           formatUnits(reserveData.liquidityRate.toString(), 25)
         ),
       };
-      console.log(reserveInfo);
+      // console.log(reserveInfo);
       // convert the data and set as per the Type defined
       // define as needed for the frontend
       // We can also get more info
@@ -135,6 +155,39 @@ export default function TokenList() {
       console.log(error);
     }
   };
+
+  const mintStakingERC20 = async () => {
+    try {
+      const _quantity = toWei(1000);
+      console.log(claimConditions);
+      // console.log(claimerProofs);
+      const _proof = ethers.utils.hexZeroPad("0x", 32);
+      toast.loading(`Minting 1000 Staking Tokens ....`);
+      const data = await claim({
+        args: [
+          address,
+          _quantity,
+          claimConditions?.currencyAddress,
+          "0",
+          {
+            proof: [_proof],
+            quantityLimitPerWallet: "0",
+            pricePerToken: "0",
+            currency: claimConditions?.currencyAddress,
+          },
+          "0x",
+        ],
+      });
+      console.log(data);
+      toast.dismiss();
+      toast.success(`Successfully Minted`);
+    } catch (err: any) {
+      console.error("contract call failure", err);
+      toast.dismiss();
+      toast.error(`${err.reason}`);
+    }
+  };
+
   return (
     <div className=" min-h-screen  pt-48">
       <h1 className="font-bold sm:text-4xl text-gray-300 text-4xl leading-none text-center tracking-tight mb-12 ">
@@ -210,7 +263,10 @@ export default function TokenList() {
               <td className="px-6 py-4">N/A</td>
               <td className="px-6 pr-12 py-4">N/A</td>
               <td className="px-6 pr-12 py-4">
-                <button className="bg-[#8a4fc5] rounded-lg font-semibold w-full text-white">
+                <button
+                  onClick={mintStakingERC20}
+                  className="bg-[#8a4fc5] rounded-lg font-semibold w-full text-white"
+                >
                   Get
                 </button>
               </td>
