@@ -1,6 +1,6 @@
 import { StaticImageData } from "next/image";
 import eth from "../assets/eth3d.png";
-import ftm from "../assets/ftm.png";
+import ftm from "../assets/ftm3d.png";
 import dai from "../assets/dai3d.png";
 import usdt from "../assets/usdt3d.png";
 import usdc from "../assets/usdc3d.png";
@@ -61,7 +61,7 @@ export const tokens: TokenType[] = [
     name: "SUSHI",
     symbol: "SUSHI",
     isNative: false,
-    address: "0x52D800ca262522580CeBAD275395ca6e7598C014",
+    address: "0x1fdE0eCc619726f4cD597887C9F3b4c8740e19e2",
     logo: sushi,
     decimals: 18,
   },
@@ -133,8 +133,8 @@ export const loanTokens: TokenType[] = [
 
 export const loanTokenLink: { [id: string]: TokenType } = {
   DAI: loanTokens[0],
-  USDC: loanTokens[1],
-  USDT: loanTokens[2],
+  USDT: loanTokens[1],
+  USDC: loanTokens[2],
   AAVE: loanTokens[3],
   SUSHI: loanTokens[4],
 };

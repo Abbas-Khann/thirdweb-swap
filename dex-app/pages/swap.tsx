@@ -23,7 +23,7 @@ import {
   parseEther,
   parseUnits,
 } from "ethers/lib/utils";
-import { TokenType, tokens } from "@/const/tokens";
+import { TokenType, tokenLink, tokens } from "@/const/tokens";
 import { Spinner } from "@chakra-ui/react";
 import Image from "next/image";
 import bg from "../assets/bg.png";
@@ -35,7 +35,7 @@ export default function Swap() {
   const amountOutMin = 0;
   const amountInMax = 0;
   const [selectedToken1, setSelectedToken1] = useState(tokens[0]);
-  const [selectedToken2, setSelectedToken2] = useState(tokens[2]);
+  const [selectedToken2, setSelectedToken2] = useState(tokens[1]);
   const [reserveA, setReserveA] = useState<number>(0);
   const [reserveB, setReserveB] = useState<number>(0);
   // const [amountIn, setAmountIn] = useState<number>(0);
@@ -322,19 +322,24 @@ export default function Swap() {
   };
 
   const getReserves = async (tokenA: TokenType, tokenB: TokenType) => {
-    const response = await routerContract?.call("getReserve", [
-      tokenA.address,
-      tokenB.address,
-    ]);
-    console.log(response);
-    if (response) {
-      setReserveA(Number(formatUnits(response.reserveA, tokenA.decimals)));
-      setReserveB(Number(formatUnits(response.reserveB, tokenB.decimals)));
-      console.log(
-        formatUnits(response.reserveA, tokenA.decimals),
-        formatUnits(response.reserveB, tokenB.decimals)
-      );
-    } // setOutAmount(_getAmount);
+    try {
+      const response = await routerContract?.call("getReserve", [
+        tokenA.address,
+        tokenB.address,
+      ]);
+      console.log(response);
+      if (response) {
+        setReserveA(Number(formatUnits(response.reserveA, tokenA.decimals)));
+        setReserveB(Number(formatUnits(response.reserveB, tokenB.decimals)));
+        // console.log(
+        //   formatUnits(response.reserveA, tokenA.decimals),
+        //   formatUnits(response.reserveB, tokenB.decimals)
+        // );
+      } // setOutAmount(_getAmount);
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.reason);
+    }
   };
 
   /// Exact Amount in , user give 1st input
@@ -343,16 +348,21 @@ export default function Swap() {
     reserveA: number,
     reserveB: number
   ) => {
-    if (amountA != 0) {
-      const amountOut = await routerContract?.call("getAmountOut", [
-        parseUnits(amountA.toString(), selectedToken1.decimals),
-        parseUnits(reserveA.toString(), selectedToken1.decimals),
-        parseUnits(reserveB.toString(), selectedToken2.decimals),
-      ]);
+    try {
+      if (amountA != 0) {
+        const amountOut = await routerContract?.call("getAmountOut", [
+          parseUnits(amountA.toString(), selectedToken1.decimals),
+          parseUnits(reserveA.toString(), selectedToken1.decimals),
+          parseUnits(reserveB.toString(), selectedToken2.decimals),
+        ]);
 
-      console.log(formatUnits(amountOut, selectedToken2.decimals));
-      // setAmountOut(Number(formatEther(amountOut)));
-      setAmountTwo(Number(formatUnits(amountOut, selectedToken2.decimals)));
+        console.log(formatUnits(amountOut, selectedToken2.decimals));
+        // setAmountOut(Number(formatEther(amountOut)));
+        setAmountTwo(Number(formatUnits(amountOut, selectedToken2.decimals)));
+      }
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.reason);
     }
   };
 
@@ -362,16 +372,21 @@ export default function Swap() {
     reserveA: number,
     reserveB: number
   ) => {
-    if (amountB != 0) {
-      const amountIn = await routerContract?.call("getAmountIn", [
-        parseUnits(amountB.toString(), selectedToken2.decimals),
-        parseUnits(reserveA.toString(), selectedToken1.decimals),
-        parseUnits(reserveB.toString(), selectedToken2.decimals),
-      ]);
-      console.log(formatUnits(amountIn, selectedToken1.decimals));
+    try {
+      if (amountB != 0) {
+        const amountIn = await routerContract?.call("getAmountIn", [
+          parseUnits(amountB.toString(), selectedToken2.decimals),
+          parseUnits(reserveA.toString(), selectedToken1.decimals),
+          parseUnits(reserveB.toString(), selectedToken2.decimals),
+        ]);
+        console.log(formatUnits(amountIn, selectedToken1.decimals));
 
-      // setAmountIn(Number(formatEther(amountIn)));
-      setAmountOne(Number(formatUnits(amountIn, selectedToken1.decimals)));
+        // setAmountIn(Number(formatEther(amountIn)));
+        setAmountOne(Number(formatUnits(amountIn, selectedToken1.decimals)));
+      }
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.reason);
     }
   };
 
@@ -400,6 +415,24 @@ export default function Swap() {
           </div>
           <div className=" pt-5 flex items-center flex-col justify-center gap-3">
             <div className=" relative md:w-full flex items-center bg-transparent border border-slate-700  rounded-2xl px-5">
+              {/* <select
+                onChange={(e) => setSelectedToken1(tokenLink[e.target.value])}
+                className=" laptop:min-w-[400px] text-center py-5 px-8 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white"
+              >
+                {tokens.map((token) => {
+                  return (
+                    <option key={token.address} value={token.name}>
+                      <Image
+                        alt=""
+                        src={token.logo || "/token.png"}
+                        width={100}
+                        height={100}
+                        className=" w-7 h-7"
+                      />
+                    </option>
+                  );
+                })}
+              </select> */}
               <Image
                 alt=""
                 src={selectedToken1.logo || "/token.png"}
@@ -453,19 +486,36 @@ export default function Swap() {
             <button
               className=" w-8 px-2 py-0.5 rounded-sm  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto "
               onClick={() => {
-                selectedToken1 === tokens[0]
-                  ? setSelectedToken1(tokens[2])
-                  : setSelectedToken1(tokens[0]);
+                // flip the token
+                const token1 = selectedToken1;
+                const token2 = selectedToken2;
 
-                selectedToken2 === tokens[2]
-                  ? setSelectedToken2(tokens[0])
-                  : setSelectedToken2(tokens[2]);
+                setSelectedToken1(token2);
+                setSelectedToken2(token1);
               }}
             >
               ↓
             </button>
-
             <div className=" relative md:w-full flex items-center bg-transparent border border-slate-700  rounded-2xl px-5">
+              {/* <select
+                onChange={(e) => setSelectedToken2(tokenLink[e.target.value])}
+                className=" laptop:min-w-[400px] text-center py-5 px-8 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white"
+              >
+  
+                {tokens.map((token) => {
+                  return (
+                    <option key={token.address} value={token.name}>
+                      <Image
+                        alt=""
+                        src={token.logo || "/token.png"}
+                        width={100}
+                        height={100}
+                        className=" w-7 h-7"
+                      />
+                    </option>
+                  );
+                })}
+              </select> */}
               <Image
                 alt=""
                 src={selectedToken2.logo || tokenImage}

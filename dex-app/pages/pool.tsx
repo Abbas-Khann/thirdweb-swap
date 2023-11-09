@@ -1,10 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import {
-  SWAP_ROUTER_ADDRESS,
-  TOKEN_ADDRESS,
-  WETH_ADDRESS,
-} from "@/const/details";
+import { SWAP_ROUTER_ADDRESS } from "@/const/details";
 import {
   formatEther,
   formatUnits,
@@ -32,8 +28,6 @@ export default function Pool() {
 
   const address = useAddress();
   const sdk = useSDK();
-  const { contract: tokenContract } = useContract(TOKEN_ADDRESS, "token");
-  const { contract: wethContract } = useContract(WETH_ADDRESS, "custom");
   const { contract: routerContract } = useContract(
     SWAP_ROUTER_ADDRESS,
     "custom"
@@ -308,17 +302,21 @@ export default function Pool() {
   };
 
   const getReserves = async (tokenA: TokenType, tokenB: TokenType) => {
-    const response = await routerContract?.call("getReserve", [
-      tokenA.address,
-      tokenB.address,
-    ]);
-    if (response) {
-      setReserveA(Number(formatUnits(response.reserveA, tokenA.decimals)));
-      setReserveB(Number(formatUnits(response.reserveB, tokenB.decimals)));
-      console.log(
-        formatUnits(response.reserveA, tokenA.decimals),
-        formatUnits(response.reserveB, tokenB.decimals)
-      );
+    try {
+      const response = await routerContract?.call("getReserve", [
+        tokenA.address,
+        tokenB.address,
+      ]);
+      if (response) {
+        setReserveA(Number(formatUnits(response.reserveA, tokenA.decimals)));
+        setReserveB(Number(formatUnits(response.reserveB, tokenB.decimals)));
+        console.log(
+          formatUnits(response.reserveA, tokenA.decimals),
+          formatUnits(response.reserveB, tokenB.decimals)
+        );
+      }
+    } catch (err) {
+      console.error(err);
     }
     // setOutAmount(_getAmount);
   };
@@ -342,7 +340,7 @@ export default function Pool() {
           Number(formatUnits(_fetchQuote, selectedToken2.decimals))
         );
       }
-    } catch (err) {
+    } catch (err: any) {
       // toast.error(err.reason);
       console.error(err);
     }
@@ -366,7 +364,7 @@ export default function Pool() {
           Number(formatUnits(_fetchQuote, selectedToken1.decimals))
         );
       }
-    } catch (err) {
+    } catch (err: any) {
       // toast.error(err.reason);
       console.error(err);
     }
