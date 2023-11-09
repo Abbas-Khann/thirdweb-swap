@@ -3,7 +3,6 @@ import { ACTIVE_CHAIN, FACTORY_ADDRESS } from "@/const/details";
 import "@/styles/globals.css";
 import {
   ThirdwebProvider,
-  ConnectWallet,
   metamaskWallet,
   coinbaseWallet,
   walletConnect,
@@ -20,7 +19,7 @@ import { AppProps } from "next/app";
 import { Toaster } from "react-hot-toast";
 
 const smartWalletOptions = {
-  factoryAddress: "0x97EA491FA1D5d3f08C7AECcF2C6b231A8ADd66a0",
+  factoryAddress: FACTORY_ADDRESS,
   gasless: true,
 };
 
