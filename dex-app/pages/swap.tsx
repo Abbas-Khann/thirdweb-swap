@@ -16,11 +16,7 @@ import {
 } from "@thirdweb-dev/react";
 import { useEffect, useState } from "react";
 import tokenImage from "../public/token.png";
-import {
-  SWAP_ROUTER_ADDRESS,
-  TOKEN_ADDRESS,
-  WETH_ADDRESS,
-} from "@/const/details";
+import { SWAP_ROUTER_ADDRESS } from "@/const/details";
 import {
   formatEther,
   formatUnits,

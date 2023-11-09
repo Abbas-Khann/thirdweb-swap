@@ -125,7 +125,7 @@ export const loanTokens: TokenType[] = [
     name: "SUSHI",
     symbol: "SUSHI",
     isNative: false,
-    address: "0x52D800ca262522580CeBAD275395ca6e7598C014",
+    address: "0x1fdE0eCc619726f4cD597887C9F3b4c8740e19e2",
     logo: sushi,
     decimals: 18,
   },
