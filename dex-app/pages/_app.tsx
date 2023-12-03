@@ -3,19 +3,23 @@ import { ACTIVE_CHAIN, FACTORY_ADDRESS } from "@/const/details";
 import "@/styles/globals.css";
 import {
   ThirdwebProvider,
-  ConnectWallet,
   metamaskWallet,
   coinbaseWallet,
   walletConnect,
   safeWallet,
   localWallet,
-  magicLink,
+  embeddedWallet,
+  trustWallet,
+  zerionWallet,
+  rainbowWallet,
+  phantomWallet,
   smartWallet,
 } from "@thirdweb-dev/react";
-import type { AppProps } from "next/app";
+import { AppProps } from "next/app";
+import { Toaster } from "react-hot-toast";
 
 const smartWalletOptions = {
-  factoryAddress: "0x97EA491FA1D5d3f08C7AECcF2C6b231A8ADd66a0",
+  factoryAddress: FACTORY_ADDRESS,
   gasless: true,
 };
 
@@ -26,29 +30,28 @@ export default function App({ Component, pageProps }: AppProps) {
       activeChain={ACTIVE_CHAIN}
       supportedChains={[ACTIVE_CHAIN]}
       supportedWallets={[
-        smartWallet(metamaskWallet({ recommended: true }), smartWalletOptions),
+        smartWallet(metamaskWallet(), smartWalletOptions),
         smartWallet(coinbaseWallet(), smartWalletOptions),
         smartWallet(walletConnect(), smartWalletOptions),
-        // smartWallet(
-        //   safeWallet({
-        //     personalWallets: [
-        //       metamaskWallet(),
-        //       coinbaseWallet(),
-        //       walletConnect(),
-        //     ],
-        //   }),
-        //   smartWalletOptions
-        // ),
+        safeWallet({
+          personalWallets: [
+            smartWallet(metamaskWallet(), smartWalletOptions),
+            smartWallet(coinbaseWallet(), smartWalletOptions),
+            smartWallet(walletConnect(), smartWalletOptions),
+            smartWallet(localWallet(), smartWalletOptions),
+            smartWallet(embeddedWallet(), smartWalletOptions),
+            smartWallet(trustWallet(), smartWalletOptions),
+            smartWallet(zerionWallet(), smartWalletOptions),
+            smartWallet(rainbowWallet(), smartWalletOptions),
+            smartWallet(phantomWallet(), smartWalletOptions),
+          ],
+        }),
         smartWallet(localWallet(), smartWalletOptions),
-        smartWallet(
-          magicLink({
-            apiKey: "YOUR_MAGIC_API_KEY",
-            oauthOptions: {
-              providers: ["google", "facebook", "twitter", "apple"],
-            },
-          }),
-          smartWalletOptions
-        ),
+        smartWallet(embeddedWallet(), smartWalletOptions),
+        smartWallet(trustWallet(), smartWalletOptions),
+        smartWallet(zerionWallet(), smartWalletOptions),
+        smartWallet(rainbowWallet(), smartWalletOptions),
+        smartWallet(phantomWallet(), smartWalletOptions),
       ]}
     >
       <div className=" relative bg-black min-h-screen bg-gradient-to-b from-[#1b1125] to-black">
@@ -56,6 +59,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <div className=" relative z-50 ">
           <Navbar />
         </div>
+        <Toaster position="bottom-center" reverseOrder={false} />
         <div className=" relative min-h-screen">
           <Component {...pageProps} />
         </div>

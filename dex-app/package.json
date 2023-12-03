@@ -6,8 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "postinstall": "npx --yes thirdweb@latest generate"
+    "lint": "next lint"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.5.5",
@@ -27,7 +26,6 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hot-toast": "^2.4.1",
-    "react-qr-code": "^2.0.12",
     "thirdweb": "^0.12.5",
     "typescript": "5.0.4"
   },

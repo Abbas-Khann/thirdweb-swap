@@ -17,7 +17,7 @@ interface Path {
 const paths: Path[] = [
   {
     title: "Token",
-    path: "/token",
+    path: "/tokenList",
   },
   {
     title: "Swap",
@@ -29,7 +29,7 @@ const paths: Path[] = [
   },
   {
     title: "Lend",
-    path: "/lend",
+    path: "/lendBorrow",
   },
   {
     title: "Stake",

@@ -12,11 +12,11 @@ export const tokenpairs: TokenPairType[] = [
   },
   {
     token1: tokens[0],
-    token2: tokens[2],
+    token2: tokens[4],
   },
   {
     token1: tokens[1],
-    token2: tokens[2],
+    token2: tokens[4],
   },
 ];
 
