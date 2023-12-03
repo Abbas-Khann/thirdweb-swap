@@ -1,4 +1,3 @@
-import React from "react";
 import { useEffect, useState } from "react";
 import { formatEther, parseEther } from "ethers/lib/utils";
 // import { tokens } from "@/const/tokens";

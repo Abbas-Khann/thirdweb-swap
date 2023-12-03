@@ -173,10 +173,9 @@ export default function Home() {
       {/* hero */}
       <div className="hero    -mt-24  ">
         <div className=" bg-black bg-opacity-60 flex items-center flex-wrap justify-center laptop:justify-around min-h-screen">
-          <div>
-            <h1 className="font-bold sm:text-6xl text-gray-300 text-4xl leading-none text-start tracking-tight mb-6 ">
-              Welcome to&nbsp;
-              <br />
+          <div className=" md:px-8 px-4">
+            <h1 className="font-bold sm:text-6xl md:max-w-2xl text-gray-300 text-4xl leading-none text-start tracking-tight mb-6 ">
+              Token Exchange made easy with &nbsp;
               <span
                 className="!bg-clip-text text-transparent"
                 style={{
@@ -186,9 +185,10 @@ export default function Home() {
               >
                 thirdweb &nbsp;
               </span>
-              swap
+              <br />
+              swap.
             </h1>
-            <p className=" text-white max-w-xl text-[20px]">
+            <p className=" text-[#A0A0A0] max-w-xl text-[20px]">
               Swap, earn, and build on the leading decentralized crypto trading
               protocol.
             </p>

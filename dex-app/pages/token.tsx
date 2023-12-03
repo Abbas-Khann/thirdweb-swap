@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import React from "react";
 
 interface Data {
@@ -15,6 +16,7 @@ const data = [
     change: "-0.90%",
     tvl: "$ 800M",
     volume: "$ 3.4M",
+    path: "/token/any",
   },
   {
     token: "any",
@@ -22,6 +24,7 @@ const data = [
     change: "-0.90%",
     tvl: "$ 800M",
     volume: "$ 3.4M",
+    path: "/token/any",
   },
   {
     token: "any",
@@ -29,10 +32,12 @@ const data = [
     change: "-0.90%",
     tvl: "$ 800M",
     volume: "$ 3.4M",
+    path: "/token/any",
   },
 ];
 
 export default function Token() {
+  const router = useRouter();
   return (
     <div className=" min-h-screen  pt-48">
       <h1 className="font-bold sm:text-4xl text-gray-300 text-4xl leading-none text-center tracking-tight mb-12 ">
@@ -71,7 +76,11 @@ export default function Token() {
           </thead>
           <tbody>
             {data.map((row, idx) => (
-              <tr key={idx} className=" text-sm text-center border-b border-gray-600 ">
+              <tr
+                onClick={() => router.push(row.path)}
+                key={idx}
+                className=" cursor-pointer text-sm text-center border-b border-gray-600 "
+              >
                 <td className="px-6 pl-12 py-4">{row.token}</td>
                 <td className="px-6 py-4">{row.price}</td>
                 <td className="px-6 py-4">{row.change}</td>
