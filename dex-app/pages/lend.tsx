@@ -3,7 +3,7 @@ export default function Lend() {
   return (
     <div className=" min-h-screen  pt-48 flex items-start justify-center">
       <div className=" grid grid-cols-12 gap-y-6 gap-x-12">
-        <div className="col-span-12 items-center justify-center flex">
+        <div className="col-span-12 border b items-center justify-center flex">
           <select className=" laptop:min-w-[400px] text-center py-5 px-8 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white">
             <option>Select any token to lend</option>
             <option>ETH</option>

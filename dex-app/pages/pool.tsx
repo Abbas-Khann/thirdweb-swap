@@ -1,5 +1,6 @@
+import { Dialog, Transition } from "@headlessui/react";
+import { Fragment, useEffect, useState } from "react";
 import React from "react";
-import { useEffect, useState } from "react";
 import { SWAP_ROUTER_ADDRESS } from "@/const/details";
 import {
   formatEther,
@@ -12,6 +13,7 @@ import { useAddress, useContract, useSDK } from "@thirdweb-dev/react";
 import { PositionType, TokenPairType, tokenpairs } from "@/const/pair";
 import { Spinner } from "@chakra-ui/react";
 import toast from "react-hot-toast";
+import Modal from "@/components/Modal";
 
 export default function Pool() {
   const [selectedToken1, setSelectedToken1] = useState(tokens[0]);
@@ -25,6 +27,16 @@ export default function Pool() {
 
   const [reserveA, setReserveA] = useState(0);
   const [reserveB, setReserveB] = useState(0);
+
+  let [isOpen, setIsOpen] = useState(true);
+
+  function closeModal() {
+    setIsOpen(false);
+  }
+
+  function openModal() {
+    setIsOpen(true);
+  }
 
   const address = useAddress();
   const sdk = useSDK();
@@ -394,74 +406,69 @@ export default function Pool() {
       <div className="relative overflow-x-auto laptop:w-8/12  mx-auto mt-5">
         <div className=" flex items-center w-full justify-between">
           <h1>Pools</h1>
-          <button
-            onClick={() => setNewPool((prev) => !prev)}
-            className=" border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-blue-500 bg-opacity-10 text-white 5mx-auto "
-          >
-            New LP +
-          </button>
-        </div>
-        {newPool && (
-          <div className=" bg-black bg-opacity-50 backdrop-blur-md my-5 p-5 px-8 border border-gray-500 rounded-xl">
-            <div className=" mb-3">Select Pair</div>
-            <div className=" flex items-center justify-normal gap-4">
-              <select
-                onChange={(e) => setSelectedToken1(tokenLink[e.target.value])}
-                className="w-full text-center py-2 px-5 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white"
-              >
-                {tokens.map((token) => {
-                  return (
-                    <option key={token.address} value={token.name}>
-                      {token.name}
-                    </option>
-                  );
-                })}
-              </select>
-              <select
-                onChange={(e) => setSelectedToken2(tokenLink[e.target.value])}
-                className="  w-full text-center py-2 px-5 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white"
-              >
-                {tokens.map((token) => {
-                  return (
-                    <option key={token.address} value={token.name}>
-                      {token.name}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-            <div className=" mt-2  mb-2">Deposit Amounts Pair</div>
+          <Modal btnTitle="New LP+">
+            <div className=" bg-black bg-opacity-50 backdrop-blur-md my-5 p-10  border border-gray-500 rounded-xl">
+              <div className="text-start text-white mb-3">Select Pair</div>
+              <div className=" flex items-center justify-normal gap-4">
+                <select
+                  onChange={(e) => setSelectedToken1(tokenLink[e.target.value])}
+                  className="w-full text-center py-2 px-5 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white"
+                >
+                  {tokens.map((token) => {
+                    return (
+                      <option key={token.address} value={token.name}>
+                        {token.name}
+                      </option>
+                    );
+                  })}
+                </select>
+                <select
+                  onChange={(e) => setSelectedToken2(tokenLink[e.target.value])}
+                  className="  w-full text-center py-2 px-5 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white"
+                >
+                  {tokens.map((token) => {
+                    return (
+                      <option key={token.address} value={token.name}>
+                        {token.name}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+              <div className=" mt-5 text-start text-white mb-2">Deposit Amounts Pair</div>
 
-            <div className=" flex items-center justify-noraml w-full gap-4">
-              <input
-                placeholder="0"
-                type="number"
-                value={desiredAmountA}
-                onChange={(e) => {
-                  setDesiredAmountA(Number(e.target.value));
-                  quoteB(Number(e.target.value), reserveA, reserveB);
-                }}
-                className=" w-full bg-transparent border border-gray-400 px-3 py-2 rounded-md text-white outline-none"
-              />
-              <input
-                placeholder="0"
-                type="number"
-                value={desiredAmountB}
-                onChange={(e) => {
-                  setDesiredAmountB(Number(e.target.value));
-                  quoteA(Number(e.target.value), reserveA, reserveB);
-                }}
-                className=" w-full bg-transparent border border-gray-400 px-3 py-2 rounded-md text-white outline-none"
-              />
+              <div className=" flex items-center justify-noraml w-full gap-4">
+                <input
+                  placeholder="0"
+                  type="number"
+                  value={desiredAmountA}
+                  onChange={(e) => {
+                    setDesiredAmountA(Number(e.target.value));
+                    quoteB(Number(e.target.value), reserveA, reserveB);
+                  }}
+                  className=" w-full bg-transparent border border-gray-400 px-3 py-2 rounded-md text-white outline-none"
+                />
+                <input
+                  placeholder="0"
+                  type="number"
+                  value={desiredAmountB}
+                  onChange={(e) => {
+                    setDesiredAmountB(Number(e.target.value));
+                    quoteA(Number(e.target.value), reserveA, reserveB);
+                  }}
+                  className=" w-full bg-transparent border border-gray-400 px-3 py-2 rounded-md text-white outline-none"
+                />
+              </div>
+              <button
+                onClick={handleAddLiquidity}
+                className=" w-full mt-5 border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-white text-black 5mx-auto "
+              >
+                Add Liquidity
+              </button>
             </div>
-            <button
-              onClick={handleAddLiquidity}
-              className=" w-full mt-5 border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-blue-500 bg-opacity-90 text-white 5mx-auto "
-            >
-              Add Liquidity
-            </button>
-          </div>
-        )}
+          </Modal>
+         
+        </div>
         <table className="w-full text-lg text-gray-500 dark:text-gray-400 mt-12">
           <thead className=" text-white ">
             <tr>

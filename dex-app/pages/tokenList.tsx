@@ -25,6 +25,7 @@ interface Data {
 import { Spinner } from "@chakra-ui/react";
 import toast from "react-hot-toast";
 import { ethers } from "ethers";
+import { useRouter } from "next/router";
 
 export default function TokenList() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -188,6 +189,8 @@ export default function TokenList() {
     }
   };
 
+  const router = useRouter();
+
   return (
     <div className=" min-h-screen  pt-48">
       <h1 className="font-bold sm:text-4xl text-gray-300 text-4xl leading-none text-center tracking-tight mb-12 ">
@@ -231,8 +234,9 @@ export default function TokenList() {
             {assetsInfo &&
               assetsInfo.map((row, idx) => (
                 <tr
+                  onClick={() => router.push(`/token/${row.assetName}`)}
                   key={idx}
-                  className=" text-sm text-center border-b border-gray-600 "
+                  className=" cursor-pointer text-sm text-center border-b border-gray-600 "
                 >
                   <td className="px-6 pl-12 py-4">{row.assetName}</td>
                   <td className="px-6 py-4">{row.totalSupply.toFixed(2)}</td>
@@ -254,7 +258,10 @@ export default function TokenList() {
                   </td>
                 </tr>
               ))}
-            <tr className=" text-sm text-center border-b border-gray-600 ">
+            <tr
+              onClick={() => router.push("/token/staked-ERC20")}
+              className=" cursor-pointer text-sm text-center border-b border-gray-600 "
+            >
               <td className="px-6 pl-12 py-4">Staked ERC20</td>
               <td className="px-6 py-4">
                 {Number(stakingTokenSupply?.displayValue).toFixed(2)}

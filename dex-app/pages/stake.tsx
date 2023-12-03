@@ -143,14 +143,14 @@ export default function Stake() {
 
   return (
     <div className=" min-h-screen  pt-48 flex items-start justify-center">
-      <div className=" grid grid-cols-12 gap-y-6 gap-x-12">
-        <div className="col-span-12 items-center justify-center flex">
-          <select className=" laptop:min-w-[400px] text-center py-5 px-8 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white">
+      <div className="md:w-10/12 grid grid-cols-12 gap-y-6 gap-x-12">
+        <div className="col-span-12 items-center w-full mx-auto justify-center flex">
+          <select className=" w-full text-center py-5 px-8 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white">
             <option>Staking ERC20</option>
           </select>
         </div>
-        <div className=" mt-2 col-span-6 flex flex-col items-center justify-center gap-8 ">
-          <div className=" py-6 px-10 laptop:min-w-[420px] flex flex-col items-stretch justify-center gap-3 text-white border border-gray-400 rounded-md ">
+        <div className="  mt-2 col-span-6 wf flex flex-col items-center justify-center gap-8 ">
+          <div className=" py-6 px-10 w-full flex flex-col items-stretch justify-center gap-3 text-white border border-gray-400 rounded-md ">
             <div>
               Available to Stake:{" "}
               {stakingTokenBalance?.displayValue.slice(0, 7)}
@@ -170,7 +170,7 @@ export default function Stake() {
           </div>
         </div>
         <div className=" col-span-6 flex flex-col items-center justify-center gap-8 ">
-          <div className=" py-6 px-10 laptop:min-w-[420px] flex flex-col items-stretch justify-center gap-3 text-white border border-gray-400 rounded-md ">
+          <div className=" py-6 px-10 w-full flex flex-col items-stretch justify-center gap-3 text-white border border-gray-400 rounded-md ">
             <div>
               Staked:{" "}
               {stakingInfo
@@ -200,7 +200,7 @@ export default function Stake() {
           </div>
           <button
             onClick={redeemRewards}
-            className=" laptop:min-w-[300px] mt-3 border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto "
+            className=" laptop:min-w-[300px] mt-3 border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out  bg-white text-black font-semibold text-lg mx-auto "
           >
             Claim Rewards
           </button>
