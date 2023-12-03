@@ -1,8 +1,7 @@
+import React from "react";
 import { useEffect, useState } from "react";
 import { formatEther, parseEther } from "ethers/lib/utils";
-// import { tokens } from "@/const/tokens";
 import {
-  ConnectWallet,
   useAddress,
   useContract,
   useContractRead,
@@ -16,6 +15,8 @@ import {
   STAKING_TOKEN,
   WETH_ADDRESS,
 } from "@/const/details";
+import { Spinner } from "@chakra-ui/react";
+import toast from "react-hot-toast";
 
 export default function Stake() {
   //   const [selectedToken, setSelectedToken] = useState(tokens[0]);
@@ -59,34 +60,32 @@ export default function Stake() {
     }
   }, [address]);
 
-  //   const approveToken = async (tokenAddress: `0x${string}`, amount: number) => {
-  //     try {
-  //       const contract = await sdk?.getContract(tokenAddress);
-  //       const tx = await contract?.call("approve", [
-  //         STAKING_ADDRESS,
-  //         parseEther(amount.toString()),
-  //       ]);
-  //       console.log(tx);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-
   const stakeTokens = async () => {
     try {
+      setLoading(true);
+      toast.loading(`Approving Tokens ....`);
       await approveToken({
         args: [STAKING_ADDRESS, parseEther(inputAmount.toString())],
       });
+      toast.dismiss();
+      toast.success(`Successfully Approved`);
+      toast.loading("Staking Token ...");
+
       // add the required address
       const _stake = await stakingContract?.call("stake", [
         parseEther(inputAmount.toString()),
       ]);
-      setLoading(true);
+      toast.dismiss();
+      toast.success(`Token Successfully Staked`);
       console.log(_stake);
       setLoading(false);
       // toast.success();
-    } catch (err) {
+    } catch (err: any) {
       // toast.error("")
+      toast.dismiss();
+
+      toast.error(`${err.reason}`);
+
       console.error(err);
     }
   };
@@ -94,15 +93,26 @@ export default function Stake() {
   // call this function in the withdraw button with inputAmount as _amount
   const withdraw = async () => {
     try {
+      setLoading(true);
+
       if (withdrawAmount) {
+        toast.loading("Withdrawing Token ...");
+
         const _withdraw = await stakingContract?.call("withdraw", [
           parseEther(withdrawAmount.toString()),
         ]);
-        setLoading(true);
+
+        toast.dismiss();
+        toast.success(`Token Successfully wihtdrawn`);
         console.log(_withdraw);
         setLoading(false);
       }
-    } catch (err) {
+    } catch (err: any) {
+      setLoading(false);
+      toast.dismiss();
+
+      toast.error(`${err.reason}`);
+
       console.error(err);
       // toast.error(err);
     }
@@ -110,13 +120,21 @@ export default function Stake() {
 
   const redeemRewards = async () => {
     try {
+      setLoading(true);
+      toast.loading("Reedeming rewards ...");
+
       // in the param put in the token that was staked
       const _redeemRewards = await stakingContract?.call("claimRewards");
-      setLoading(true);
+      toast.dismiss();
+      toast.success(`Token Successfully reedemed`);
       console.log(_redeemRewards);
       setLoading(false);
       // toast.success("Redeemed rewards")
-    } catch (err) {
+    } catch (err: any) {
+      setLoading(false);
+      toast.error(`${err.reason}`);
+      toast.dismiss();
+
       console.error(err);
       // toast.error(err)
       //   alert(err.message);
@@ -124,108 +142,71 @@ export default function Stake() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center">
-      stake
-      <div className="flex flex-col items-center">
-        <ConnectWallet
-          className=" "
-          style={{ padding: "20px 0px", fontSize: "18px", width: "100%" }}
-          theme="dark"
-        />
-        <div>
-          <input
-            className="text-gray-200 outline-double"
-            onChange={(e) => setInputAmount(Number(e.target.value))}
-          ></input>
-          <br />
-          <button
-            className="text-white font-semibold bg-[#8a4fc5]"
-            onClick={stakeTokens}
-          >
-            Supply
-          </button>
+    <div className=" min-h-screen  pt-48 flex items-start justify-center">
+      <div className=" grid grid-cols-12 gap-y-6 gap-x-12">
+        <div className="col-span-12 items-center justify-center flex">
+          <select className=" laptop:min-w-[400px] text-center py-5 px-8 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white">
+            <option>Staking ERC20</option>
+          </select>
         </div>
-        <br />
-        <div>
-          <input
-            className="text-gray-200 outline-double"
-            onChange={(e) => setWithdrawAmount(Number(e.target.value))}
-          ></input>
-          <br />
-          <button
-            className="text-white font-semibold bg-[#8a4fc5]"
-            onClick={withdraw}
-          >
-            Withdraw
-          </button>
+        <div className=" mt-2 col-span-6 flex flex-col items-center justify-center gap-8 ">
+          <div className=" py-6 px-10 laptop:min-w-[420px] flex flex-col items-stretch justify-center gap-3 text-white border border-gray-400 rounded-md ">
+            <div>
+              Available to Stake:{" "}
+              {stakingTokenBalance?.displayValue.slice(0, 7)}
+            </div>
+            <input
+              placeholder="0"
+              type="number"
+              className=" bg-transparent border border-gray-400 px-3 py-2 rounded-md text-white outline-none"
+              onChange={(e) => setInputAmount(Number(e.target.value))}
+            />
+            <button
+              onClick={stakeTokens}
+              className=" mt-1 w-full border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto "
+            >
+              Stake
+            </button>
+          </div>
         </div>
-        <br />
-        <div>
-          <br />
+        <div className=" col-span-6 flex flex-col items-center justify-center gap-8 ">
+          <div className=" py-6 px-10 laptop:min-w-[420px] flex flex-col items-stretch justify-center gap-3 text-white border border-gray-400 rounded-md ">
+            <div>
+              Staked:{" "}
+              {stakingInfo
+                ? formatEther(stakingInfo._tokensStaked.toString()).slice(0, 7)
+                : 0}
+            </div>
+            <input
+              placeholder="0"
+              type="number"
+              className=" bg-transparent border border-gray-400 px-3 py-2 rounded-md text-white outline-none"
+              onChange={(e) => setWithdrawAmount(Number(e.target.value))}
+            />
+            <button
+              onClick={stakeTokens}
+              className=" mt-1 w-full border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto "
+            >
+              Unstake
+            </button>
+          </div>
+        </div>
+        <div className="col-span-12 items-center justify-center flex flex-col  text-white">
+          <div>
+            Rewards Claimable:{" "}
+            {stakingInfo
+              ? formatEther(stakingInfo._rewards.toString()).slice(0, 7)
+              : 0}
+          </div>
           <button
-            className="text-white font-semibold bg-[#8a4fc5]"
             onClick={redeemRewards}
+            className=" laptop:min-w-[300px] mt-3 border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto "
           >
-            Reedem
+            Claim Rewards
           </button>
         </div>
+        {loading ? <a>Processing Txs...</a> : <a>Waiting ...</a>}
       </div>
     </div>
   );
 }
-import React from "react";
-
-// export default function Stake() {
-//   return (
-//     <div className=" min-h-screen  pt-48 flex items-start justify-center">
-//       <div className=" grid grid-cols-12 gap-y-6 gap-x-12">
-//         <div className="col-span-12 items-center justify-center flex">
-//           <select className=" laptop:min-w-[400px] text-center py-5 px-8 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white">
-//             <option>Select any token to stake</option>
-//             <option>ETH</option>
-//             <option>MATIC</option>
-//             <option>DAI</option>
-//           </select>
-//         </div>
-//         <div className=" mt-2 col-span-6 flex flex-col items-center justify-center gap-8 ">
-//           <div className=" py-6 px-10 laptop:min-w-[420px] flex flex-col items-stretch justify-center gap-3 text-white border border-gray-400 rounded-md ">
-//             <div>Staked: 0</div>
-//             <input
-//               placeholder="0"
-//               type="number"
-//               className=" bg-transparent border border-gray-400 px-3 py-2 rounded-md text-white outline-none"
-//             />
-//             <button className=" mt-1 w-full border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto ">
-//               Unstake
-//             </button>
-//           </div>
-//         </div>
-//         <div className=" col-span-6 flex flex-col items-center justify-center gap-8 ">
-//           <div className=" py-6 px-10 laptop:min-w-[420px] flex flex-col items-stretch justify-center gap-3 text-white border border-gray-400 rounded-md ">
-//             <div>Claimable: 0</div>
-//             <input
-//               placeholder="0"
-//               type="number"
-//               className=" bg-transparent border border-gray-400 px-3 py-2 rounded-md text-white outline-none"
-//             />
-//             <button className=" mt-1 w-full border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto ">
-//               Claim
-//             </button>
-//           </div>
-//         </div>
-//         <div className="col-span-12 items-center justify-center flex flex-col">
-//           <div>
-//             <input
-//               placeholder="0"
-//               type="number"
-//               className=" laptop:min-w-[300px] bg-transparent border border-gray-400 px-3 py-2 rounded-md text-white outline-none"
-//             />
-//           </div>
-//           <button className=" laptop:min-w-[300px] mt-3 border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white mx-auto ">
-//             Stake
-//           </button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }

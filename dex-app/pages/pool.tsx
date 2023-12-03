@@ -1,43 +1,33 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import {
-  SWAP_ROUTER_ADDRESS,
-  TOKEN_ADDRESS,
-  WETH_ADDRESS,
-} from "@/const/details";
+import { SWAP_ROUTER_ADDRESS } from "@/const/details";
 import {
   formatEther,
   formatUnits,
   parseEther,
   parseUnits,
 } from "ethers/lib/utils";
-import { TokenType, tokens } from "@/const/tokens";
-import {
-  ConnectWallet,
-  useAddress,
-  useContract,
-  useContractWrite,
-  useSDK,
-} from "@thirdweb-dev/react";
+import { TokenType, tokenLink, tokens } from "@/const/tokens";
+import { useAddress, useContract, useSDK } from "@thirdweb-dev/react";
 import { PositionType, TokenPairType, tokenpairs } from "@/const/pair";
-import { Console } from "console";
+import { Spinner } from "@chakra-ui/react";
+import toast from "react-hot-toast";
 
 export default function Pool() {
   const [selectedToken1, setSelectedToken1] = useState(tokens[0]);
   const [selectedToken2, setSelectedToken2] = useState(tokens[2]);
   const [desiredAmountA, setDesiredAmountA] = useState(0);
   const [desiredAmountB, setDesiredAmountB] = useState(0);
-
+  const [newPool, setNewPool] = useState(false);
   const [liquidity, setLiquidity] = useState(0);
   const [positions, setPositions] = useState<PositionType[]>();
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [reserveA, setReserveA] = useState(0);
   const [reserveB, setReserveB] = useState(0);
 
   const address = useAddress();
   const sdk = useSDK();
-  const { contract: tokenContract } = useContract(TOKEN_ADDRESS, "token");
-  const { contract: wethContract } = useContract(WETH_ADDRESS, "custom");
   const { contract: routerContract } = useContract(
     SWAP_ROUTER_ADDRESS,
     "custom"
@@ -72,6 +62,8 @@ export default function Pool() {
 
   const approveToken = async (token: TokenType, amount: number) => {
     try {
+      setLoading(true);
+      toast.loading(`Approving Tokens ....`);
       const contract = await sdk?.getContract(token.address);
       const data = await contract?.call("allowance", [
         address,
@@ -86,7 +78,13 @@ export default function Pool() {
         ]);
         console.log(tx);
       }
-    } catch (error) {
+      toast.dismiss();
+      toast.success(`Successfully Approved`);
+      setLoading(false);
+    } catch (error: any) {
+      setLoading(false);
+      toast.error(`${error.reason}`);
+
       console.log(error);
     }
   };
@@ -98,9 +96,12 @@ export default function Pool() {
     tokenB: TokenType
   ) => {
     try {
+      setLoading(true);
+
       if (tokenA && tokenB && valueOne && valueTwo && address) {
         await approveToken(tokenA, valueOne);
         await approveToken(tokenB, valueTwo);
+        toast.loading("Adding Token Liquidity ....");
 
         const _deadline = getDeadline();
         const _addLiquidity = await routerContract?.call("addLiquidity", [
@@ -115,11 +116,15 @@ export default function Pool() {
         ]);
         // setLoading(true);
         console.log(_addLiquidity);
-
+        toast.dismiss();
+        toast.success(`Liquidity Successfully added`);
         // setLoading(false);
       } else {
       }
-    } catch (err) {
+      setLoading(false);
+    } catch (err: any) {
+      setLoading(false);
+      toast.error(`${err.reason}`);
       // alert shall be changed to toast.error(err.reason) once kushagra adds it
       //   alert(err.reason);
       console.error(err);
@@ -132,8 +137,11 @@ export default function Pool() {
     token: TokenType
   ) => {
     try {
+      setLoading(true);
+
       if (token && valueToken && valueETH && address) {
         await approveToken(token, valueToken);
+        toast.loading("Adding Token Liquidity ....");
 
         const _deadline = getDeadline();
         const _addLiquidity = await routerContract?.call(
@@ -148,12 +156,18 @@ export default function Pool() {
           ],
           { value: parseEther(valueETH.toString()) }
         );
+        toast.dismiss();
+        toast.success(`Liquidity Successfully added`);
         // setLoading(true);
         console.log(_addLiquidity);
-        // setLoading(false);
+        setLoading(false);
       } else {
       }
-    } catch (err) {
+      setLoading(false);
+    } catch (err: any) {
+      setLoading(false);
+      toast.error(`${err.reason}`);
+
       //   alert(err.reason);
       console.error(err);
     }
@@ -217,8 +231,12 @@ export default function Pool() {
     liquidityAmount: number
   ) => {
     try {
+      setLoading(true);
+
       if (addressTokenA && addressTokenB && liquidityAmount) {
         const _deadline = getDeadline();
+        toast.loading("Removing Token Liquidity ....");
+
         const _removeLiquidity = await routerContract?.call("removeLiquidity", [
           addressTokenA,
           addressTokenB,
@@ -230,10 +248,15 @@ export default function Pool() {
         ]);
         // setLoading(true);
         console.log(_removeLiquidity);
+        toast.dismiss();
+        toast.success(`Liquidity Successfully removed`);
         // setLoading(false);
       } else {
       }
-    } catch (err) {
+    } catch (err: any) {
+      setLoading(false);
+      toast.error(`${err.reason}`);
+
       // alert shall be changed to toast.error(err.reason) once kushagra adds it
       //   alert(err.reason);
       console.error(err);
@@ -245,8 +268,12 @@ export default function Pool() {
     addressTokenA: `0x${string}`
   ) => {
     try {
+      setLoading(true);
+
       if (addressTokenA && liquidityAmount) {
         const _deadline = getDeadline();
+        toast.loading("Removing Token Liquidity ....");
+
         const _removeLiquidity = await routerContract?.call(
           "removeLiquidityETH",
           [
@@ -260,27 +287,36 @@ export default function Pool() {
         );
         // setLoading(true);
         console.log(_removeLiquidity);
-        // setLoading(false);
+        toast.dismiss();
+        toast.success(`Liquidity Successfully removed`);
+        setLoading(false);
       } else {
       }
-    } catch (err) {
+    } catch (err: any) {
       //   alert(err.reason);
+      setLoading(false);
+      toast.error(`${err.reason}`);
+
       console.error(err);
     }
   };
 
   const getReserves = async (tokenA: TokenType, tokenB: TokenType) => {
-    const response = await routerContract?.call("getReserve", [
-      tokenA.address,
-      tokenB.address,
-    ]);
-    if (response) {
-      setReserveA(Number(formatUnits(response.reserveA, tokenA.decimals)));
-      setReserveB(Number(formatUnits(response.reserveB, tokenB.decimals)));
-      console.log(
-        formatUnits(response.reserveA, tokenA.decimals),
-        formatUnits(response.reserveB, tokenB.decimals)
-      );
+    try {
+      const response = await routerContract?.call("getReserve", [
+        tokenA.address,
+        tokenB.address,
+      ]);
+      if (response) {
+        setReserveA(Number(formatUnits(response.reserveA, tokenA.decimals)));
+        setReserveB(Number(formatUnits(response.reserveB, tokenB.decimals)));
+        console.log(
+          formatUnits(response.reserveA, tokenA.decimals),
+          formatUnits(response.reserveB, tokenB.decimals)
+        );
+      }
+    } catch (err) {
+      console.error(err);
     }
     // setOutAmount(_getAmount);
   };
@@ -304,7 +340,7 @@ export default function Pool() {
           Number(formatUnits(_fetchQuote, selectedToken2.decimals))
         );
       }
-    } catch (err) {
+    } catch (err: any) {
       // toast.error(err.reason);
       console.error(err);
     }
@@ -328,7 +364,7 @@ export default function Pool() {
           Number(formatUnits(_fetchQuote, selectedToken1.decimals))
         );
       }
-    } catch (err) {
+    } catch (err: any) {
       // toast.error(err.reason);
       console.error(err);
     }
@@ -354,92 +390,6 @@ export default function Pool() {
   }, [address]);
 
   return (
-    <div className="flex flex-col justify-center items-center">
-      pool
-      <div className="flex flex-col items-center">
-        <ConnectWallet
-          className=" "
-          style={{ padding: "20px 0px", fontSize: "18px", width: "100%" }}
-          theme="dark"
-        />
-        <div>
-          {selectedToken1 && selectedToken1.name}
-          <br />
-          <input
-            type="number"
-            value={desiredAmountA}
-            className="text-gray-200 outline-double"
-            onChange={(e) => {
-              setDesiredAmountA(Number(e.target.value));
-              quoteB(Number(e.target.value), reserveA, reserveB);
-            }}
-          ></input>
-          <br />
-        </div>
-        <br />
-        <div>
-          {selectedToken2 && selectedToken2.name}
-          <br />
-          <input
-            type="number"
-            value={desiredAmountB}
-            className="text-gray-200 outline-double"
-            onChange={(e) => {
-              setDesiredAmountB(Number(e.target.value));
-              quoteA(Number(e.target.value), reserveA, reserveB);
-            }}
-          ></input>
-          <br />
-        </div>
-        <div>
-          <button
-            className="text-white font-semibold bg-[#8a4fc5]"
-            onClick={handleAddLiquidity}
-          >
-            Add Liquidity & create Pair
-          </button>
-        </div>
-      </div>
-      <div className="flex flex-col items-center">
-        {positions?.map((position) => {
-          return (
-            <>
-              <div>
-                {position && position.token1.name} -{" "}
-                {position && position.token2.name} : {position.liquidtyAmount}
-                <br />
-              </div>
-              <br />
-              <div>
-                <input
-                  type="number"
-                  className="text-gray-200 outline-double"
-                  onChange={(e) => {
-                    setLiquidity(Number(e.target.value));
-                  }}
-                ></input>
-                <button
-                  className="text-white font-semibold bg-[#8a4fc5]"
-                  onClick={() =>
-                    handleRemoveLiquidity(position.token1, position.token2)
-                  }
-                >
-                  Remove Liquidity
-                </button>
-              </div>
-            </>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-("use client");
-
-export function Token() {
-  const [newPool, setNewPool] = useState(false);
-
-  return (
     <div className=" min-h-screen  pt-48 flex items-start justify-center text-white">
       <div className="relative overflow-x-auto laptop:w-8/12  mx-auto mt-5">
         <div className=" flex items-center w-full justify-between">
@@ -448,22 +398,36 @@ export function Token() {
             onClick={() => setNewPool((prev) => !prev)}
             className=" border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-blue-500 bg-opacity-10 text-white 5mx-auto "
           >
-            New Pool +
+            New LP +
           </button>
         </div>
         {newPool && (
           <div className=" bg-black bg-opacity-50 backdrop-blur-md my-5 p-5 px-8 border border-gray-500 rounded-xl">
             <div className=" mb-3">Select Pair</div>
             <div className=" flex items-center justify-normal gap-4">
-              <select className="w-full text-center py-2 px-5 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white">
-                <option>ETH</option>
-                <option>MATIC</option>
-                <option>DAI</option>
+              <select
+                onChange={(e) => setSelectedToken1(tokenLink[e.target.value])}
+                className="w-full text-center py-2 px-5 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white"
+              >
+                {tokens.map((token) => {
+                  return (
+                    <option key={token.address} value={token.name}>
+                      {token.name}
+                    </option>
+                  );
+                })}
               </select>
-              <select className="  w-full text-center py-2 px-5 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white">
-                <option>MATIC</option>
-                <option>ETH</option>
-                <option>DAI</option>
+              <select
+                onChange={(e) => setSelectedToken2(tokenLink[e.target.value])}
+                className="  w-full text-center py-2 px-5 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white"
+              >
+                {tokens.map((token) => {
+                  return (
+                    <option key={token.address} value={token.name}>
+                      {token.name}
+                    </option>
+                  );
+                })}
               </select>
             </div>
             <div className=" mt-2  mb-2">Deposit Amounts Pair</div>
@@ -472,15 +436,28 @@ export function Token() {
               <input
                 placeholder="0"
                 type="number"
+                value={desiredAmountA}
+                onChange={(e) => {
+                  setDesiredAmountA(Number(e.target.value));
+                  quoteB(Number(e.target.value), reserveA, reserveB);
+                }}
                 className=" w-full bg-transparent border border-gray-400 px-3 py-2 rounded-md text-white outline-none"
               />
               <input
                 placeholder="0"
                 type="number"
+                value={desiredAmountB}
+                onChange={(e) => {
+                  setDesiredAmountB(Number(e.target.value));
+                  quoteA(Number(e.target.value), reserveA, reserveB);
+                }}
                 className=" w-full bg-transparent border border-gray-400 px-3 py-2 rounded-md text-white outline-none"
               />
             </div>
-            <button className=" w-full mt-5 border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-blue-500 bg-opacity-90 text-white 5mx-auto ">
+            <button
+              onClick={handleAddLiquidity}
+              className=" w-full mt-5 border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-blue-500 bg-opacity-90 text-white 5mx-auto "
+            >
               Add Liquidity
             </button>
           </div>
@@ -504,18 +481,39 @@ export function Token() {
             </tr>
           </thead>
           <tbody>
-            <tr className=" text-sm text-center border-b border-gray-600 ">
-              <td className="px-6 py-4">Tk1</td>
-              <td className="px-6 py-4">Tk2</td>
-              <td className="px-6 py-4">0.692323</td>
-              <td className="px-6 py-4">
-                <button className=" border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-red-500 bg-opacity-100 text-white 5mx-auto ">
-                  Remove Liquidity
-                </button>
-              </td>
-            </tr>
+            {positions?.map((position) => {
+              return (
+                <tr className=" text-sm text-center border-b border-gray-600 ">
+                  <td className="px-6 py-4">{position?.token1.name}</td>
+                  <td className="px-6 py-4">{position?.token2.name}</td>
+                  <td className="px-6 py-4">
+                    {position?.liquidtyAmount.toFixed(7)}
+                  </td>
+                  <td className="px-6 py-4 space-x-3">
+                    <input
+                      placeholder="0"
+                      type="number"
+                      value={liquidity}
+                      onChange={(e) => {
+                        setLiquidity(Number(e.target.value));
+                      }}
+                      className="w-1/5 bg-transparent border border-gray-400 px-3 py-2 rounded-md text-white outline-none"
+                    />
+                    <button
+                      onClick={() =>
+                        handleRemoveLiquidity(position.token1, position.token2)
+                      }
+                      className=" border border-gray-700 px-5 rounded-md py-3  active:scale-95 transition-all ease-in-out bg-red-500 bg-opacity-100 text-white 5mx-auto "
+                    >
+                      Remove Liquidity
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
+        {loading && <Spinner />}
       </div>
     </div>
   );
