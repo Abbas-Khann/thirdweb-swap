@@ -49,11 +49,11 @@ export default function Navbar() {
 
   return (
     <>
-      {showWarning && (
+      {showWarning && router.asPath === "/" && (
         <div
           className={clsx(
             router.asPath !== "/" && " fixed",
-            " w-full relative text-white py-4 laptop:px-20 gap-4 flex items-center justify-center text-center"
+            "  md:bg-none w-full relative text-white py-4 laptop:px-20 gap-4 flex items-center justify-center text-center"
           )}
           style={{
             background:
@@ -75,7 +75,7 @@ export default function Navbar() {
       <div
         className={clsx(
           router.asPath !== "/" && " fixed",
-          "  w-full  flex items-center justify-between pt-12 px-16 bg-transparent"
+          " w-full  flex items-center justify-between pt-12 px-16 bg-transparent"
         )}
       >
         <Link href={"/"}>
@@ -94,8 +94,8 @@ export default function Navbar() {
               {title}
             </Link>
           ))}
+          <ConnectWallet theme="dark" />
         </div>
-        <ConnectWallet theme="dark" />
       </div>
     </>
   );

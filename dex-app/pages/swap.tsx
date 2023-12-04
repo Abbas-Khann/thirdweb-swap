@@ -28,6 +28,7 @@ import { Spinner } from "@chakra-ui/react";
 import Image from "next/image";
 import bg from "../assets/bg.png";
 import toast from "react-hot-toast";
+import token from "@/assets/token1.png";
 
 export default function Swap() {
   const sdk = useSDK();
@@ -413,33 +414,33 @@ export default function Swap() {
           <div className=" absolute top-4 left-10  text-gray-200 mr-auto text-2xl font-semibold">
             Swap
           </div>
-          <div className=" pt-5 flex items-center flex-col justify-center gap-3">
-            <div className="focus:outline-none focus:shadow-outline relative md:w-full flex items-center bg-transparent border border-slate-700  rounded-2xl px-5">
-              {/* <select
+          <div className=" pt-5  flex items-center flex-col justify-center gap-3">
+            <div className="focus:outline-none gap-3 focus:shadow-outline relative md:w-full flex items-center bg-transparent border border-slate-700  rounded-2xl px-5">
+              <select
                 onChange={(e) => setSelectedToken1(tokenLink[e.target.value])}
-                className="appearance-none h-12 w-12 text-center rounded-md bg-transparent text-white"
+                className=" outline-none text-center px-3 py-2 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white"
               >
                 {tokens.map((token) => {
                   return (
                     <option
-                      // data-thumbnail={token.logo || "/token.png"}
+                      className=" text-white"
                       key={token.address}
                       value={token.name}
                     >
                       <div>
                         <Image
                           alt={token.name}
-                          src={token.logo || "/token.png"}
+                          src={token.logo || token}
                           width={100}
                           height={100}
                           className="w-7 h-7"
                         />
+                        {token.name}
                       </div>
-  
                     </option>
                   );
                 })}
-              </select> */}
+              </select>
               <Image
                 alt=""
                 src={selectedToken1.logo || "/token.png"}
@@ -503,26 +504,30 @@ export default function Swap() {
             >
               ↓
             </button>
-            <div className=" relative md:w-full flex items-center bg-transparent border border-slate-700  rounded-2xl px-5">
-              {/* <select
+            <div className=" gap-3 relative md:w-full flex items-center bg-transparent border border-slate-700  rounded-2xl px-5">
+              <select
                 onChange={(e) => setSelectedToken2(tokenLink[e.target.value])}
-                className=" laptop:min-w-[400px] text-center py-5 px-8 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white"
+                className=" outline-none text-center px-3 py-2 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white"
               >
-  
                 {tokens.map((token) => {
                   return (
-                    <option key={token.address} value={token.name}>
+                    <option
+                      className=" text-white"
+                      key={token.address}
+                      value={token.name}
+                    >
                       <Image
                         alt=""
-                        src={token.logo || "/token.png"}
+                        src={token.logo || token}
                         width={100}
                         height={100}
                         className=" w-7 h-7"
                       />
+                      {token.name}
                     </option>
                   );
                 })}
-              </select> */}
+              </select>
               <Image
                 alt=""
                 src={selectedToken2.logo || tokenImage}
