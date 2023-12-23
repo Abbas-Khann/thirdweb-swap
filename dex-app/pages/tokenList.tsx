@@ -192,7 +192,7 @@ export default function TokenList() {
   const router = useRouter();
 
   return (
-    <div className=" min-h-screen  pt-48">
+    <div className="px-6 min-h-screen py-20 md:pt-48">
       <h1 className="font-bold sm:text-4xl text-gray-300 text-4xl leading-none text-center tracking-tight mb-12 ">
         Top Tokens on&nbsp;
         <span

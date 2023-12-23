@@ -403,51 +403,53 @@ export default function Swap() {
 
   return (
     // <div className=" bg-black min-h-screen bg-gradient-to-b from-[#1b1125] to-black">
-    <div className="">
+    <div className="px-6 pb-12">
       <div className=" relative  flex-col w-full min-h-[80vh] flex items-center justify-center">
         <Image
           src={bg}
           alt="bg"
           className=" absolute top-20 laptop:right-[18vw] desktop:right-[25vw] "
         />
-        <div className=" laptop:mt-24 desktop:mt-10 w-[90vw] md:w-auto relative bg-[#212429] backdrop-blur-sm  bg-opacity-30 border border-slate-700 p-10 py-12  rounded-xl flex-col gap-6 flex items-center justify-center">
+        <div className=" w-full mt-12 md:mt-40 md:w-auto relative bg-[#212429] backdrop-blur-sm  bg-opacity-30 border border-slate-700 md:p-10 p-4  py-12  rounded-xl flex-col gap-6 flex items-center justify-center">
           <div className=" absolute top-4 left-10  text-gray-200 mr-auto text-2xl font-semibold">
             Swap
           </div>
-          <div className=" pt-5  flex items-center flex-col justify-center gap-3">
-            <div className="focus:outline-none gap-3 focus:shadow-outline relative md:w-full flex items-center bg-transparent border border-slate-700  rounded-2xl px-5">
-              <select
-                onChange={(e) => setSelectedToken1(tokenLink[e.target.value])}
-                className=" outline-none text-center px-3 py-2 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white"
-              >
-                {tokens.map((token) => {
-                  return (
-                    <option
-                      className=" text-white"
-                      key={token.address}
-                      value={token.name}
-                    >
-                      <div>
-                        <Image
-                          alt={token.name}
-                          src={token.logo || token}
-                          width={100}
-                          height={100}
-                          className="w-7 h-7"
-                        />
-                        {token.name}
-                      </div>
-                    </option>
-                  );
-                })}
-              </select>
-              <Image
-                alt=""
-                src={selectedToken1.logo || "/token.png"}
-                width={100}
-                height={100}
-                className=" w-7 h-7"
-              />
+          <div className=" w-full pt-5 flex items-center flex-col justify-center gap-3">
+            <div className="focus:outline-none gap-3 focus:shadow-outline relative bg-transparent border border-slate-700  rounded-2xl py-5 md:py-0 px-5 w-full flex items-center md:flex-row flex-col">
+              <div className=" flex gap-2 w-full md:w-auto items-center justify-between">
+                <select
+                  onChange={(e) => setSelectedToken1(tokenLink[e.target.value])}
+                  className="w-auto outline-none text-center px-3 py-2 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white"
+                >
+                  {tokens.map((token) => {
+                    return (
+                      <option
+                        className=" text-white"
+                        key={token.address}
+                        value={token.name}
+                      >
+                        <div>
+                          <Image
+                            alt={token.name}
+                            src={token.logo || token}
+                            width={100}
+                            height={100}
+                            className="w-7 h-7"
+                          />
+                          {token.name}
+                        </div>
+                      </option>
+                    );
+                  })}
+                </select>
+                <Image
+                  alt=""
+                  src={selectedToken1.logo || "/token.png"}
+                  width={100}
+                  height={100}
+                  className=" w-7 h-7"
+                />
+              </div>
               <input
                 type="number"
                 value={amountOne}
@@ -456,12 +458,12 @@ export default function Swap() {
                   getAmountOut(Number(e.target.value), reserveA, reserveB);
                   setExactAmountIn(true);
                 }}
-                className=" text-2xl py-7 text-gray-200 font-mono bg-transparent pl-3 md:px-5 outline-none"
+                className=" text-center md:text-start text-2xl py-7 w-full text-gray-200 font-mono bg-transparent pl-3 md:px-5 outline-none"
                 placeholder="0.0"
               />
               {!selectedToken1.isNative ? (
                 <button
-                  className="absolute right-4 active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white rounded-md px-3 p-2"
+                  className=" md:w-auto w-full md:absolute right-4 active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white rounded-md px-3 p-2"
                   onClick={() => {
                     setAmountOne(Number(token1Balance?.displayValue));
                     getAmountOut(
@@ -476,7 +478,7 @@ export default function Swap() {
                 </button>
               ) : (
                 <button
-                  className="absolute right-4 active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white rounded-md px-3 p-2"
+                  className="md:w-auto w-full md:absolute right-4 active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white rounded-md px-3 p-2"
                   onClick={() => {
                     setAmountOne(Number(nativeBalance?.displayValue));
                     getAmountOut(
@@ -504,37 +506,39 @@ export default function Swap() {
             >
               ↓
             </button>
-            <div className=" gap-3 relative md:w-full flex items-center bg-transparent border border-slate-700  rounded-2xl px-5">
-              <select
-                onChange={(e) => setSelectedToken2(tokenLink[e.target.value])}
-                className=" outline-none text-center px-3 py-2 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white"
-              >
-                {tokens.map((token) => {
-                  return (
-                    <option
-                      className=" text-white"
-                      key={token.address}
-                      value={token.name}
-                    >
-                      <Image
-                        alt=""
-                        src={token.logo || token}
-                        width={100}
-                        height={100}
-                        className=" w-7 h-7"
-                      />
-                      {token.name}
-                    </option>
-                  );
-                })}
-              </select>
-              <Image
-                alt=""
-                src={selectedToken2.logo || tokenImage}
-                width={100}
-                height={100}
-                className=" w-7 h-7"
-              />
+            <div className="focus:outline-none gap-3 focus:shadow-outline relative bg-transparent border border-slate-700  rounded-2xl py-5 md:py-0 px-5 w-full flex items-center md:flex-row flex-col">
+              <div className=" flex gap-2 w-full md:w-auto items-center justify-between">
+                <select
+                  onChange={(e) => setSelectedToken2(tokenLink[e.target.value])}
+                  className="w-auto outline-none text-center px-3 py-2 cursor-pointer border border-gray-400 rounded-md bg-transparent text-white"
+                >
+                  {tokens.map((token) => {
+                    return (
+                      <option
+                        className=" text-white"
+                        key={token.address}
+                        value={token.name}
+                      >
+                        <Image
+                          alt=""
+                          src={token.logo || token}
+                          width={100}
+                          height={100}
+                          className=" w-7 h-7"
+                        />
+                        {token.name}
+                      </option>
+                    );
+                  })}
+                </select>
+                <Image
+                  alt=""
+                  src={selectedToken2.logo || tokenImage}
+                  width={100}
+                  height={100}
+                  className=" w-7 h-7"
+                />
+              </div>
               <input
                 type="number"
                 value={amountTwo}
@@ -543,12 +547,12 @@ export default function Swap() {
                   getAmountIn(Number(e.target.value), reserveA, reserveB);
                   setExactAmountOut(true);
                 }}
-                className=" text-2xl py-7 text-gray-200 font-mono bg-transparent pl-3 md:px-5 outline-none"
+                className=" text-center md:text-start text-2xl py-7 w-full text-gray-200 font-mono bg-transparent pl-3 md:px-5 outline-none"
                 placeholder="0.0"
               />
               {!selectedToken2.isNative ? (
                 <button
-                  className="absolute right-4 active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white rounded-md px-3 p-2"
+                  className="md:w-auto w-full md:absolute right-4 active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white rounded-md px-3 p-2"
                   onClick={() => {
                     setAmountTwo(Number(token2Balance?.displayValue));
                     getAmountIn(
@@ -563,7 +567,7 @@ export default function Swap() {
                 </button>
               ) : (
                 <button
-                  className="absolute right-4 active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white rounded-md px-3 p-2"
+                  className="md:w-auto w-full md:absolute right-4 active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white rounded-md px-3 p-2"
                   onClick={() => {
                     setAmountTwo(Number(nativeBalance?.displayValue));
                     getAmountIn(

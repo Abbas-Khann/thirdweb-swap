@@ -10,7 +10,7 @@ export default function TokenPage() {
   const address = useAddress();
   const router = useRouter();
   return (
-    <div className=" w-full min-h-screen flex md:flex-row flex-col items-center justify-center">
+    <div className="px-6 py-20 w-full min-h-screen flex md:flex-row flex-col items-center justify-center">
       <div className=" text-white px-10 ">
         <div className="md:mx-10 mx-4  flex-col h-full flex items-start justify-between w-full  gap-3">
           <div className=" md:mb-24 mb-10">
@@ -32,7 +32,7 @@ export default function TokenPage() {
               Stats
             </h1>
             <div className=" w-full my-auto relative bg-transparent bg-opacity-30 border border-slate-700 p-10 py-12  rounded-xl flex-col gap-6 flex items-center justify-center">
-              <div className=" flex items-center justify-around w-full">
+              <div className=" flex items-center md:flex-row flex-col gap-3 md:gap-0 justify-around w-full">
                 <div className=" space-y-2">
                   <div className=" text-[#A0A0A0]">TVL</div>
                   <div className=" text-2xl">$188.7M</div>
@@ -53,7 +53,7 @@ export default function TokenPage() {
             </div>
           </div>
 
-          <div className=" mt-10">
+          <div className=" mt-10 mb-10 md:mb-0">
             <h1 className=" text-2xl font-semibold">About</h1>
             <p>
               Lorem ipsum dolor sit amet consectetur. Sed fermentum nunc
@@ -64,69 +64,71 @@ export default function TokenPage() {
           </div>
         </div>
       </div>
-      <div className=" my-auto mx-4 md:mx-10 relative bg-[#212429] bg-opacity-30 border border-slate-700 p-10 py-12  rounded-xl flex-col gap-6 flex items-center justify-center">
-        <h1 className="text-gray-200 mr-auto text-2xl font-semibold">Swap</h1>
-        <div className=" w-full flex items-center flex-col justify-center gap-3">
-          <div className=" space-y-4 w-full flex flex-col items-center">
-            <div className=" relative md:w-full flex items-center bg-transparent border border-slate-700  rounded-2xl px-5">
-              <Image
-                alt=""
-                src={token2}
-                width={100}
-                height={100}
-                className=" w-7 h-7"
-              />
-              <input
-                type="number"
-                className=" text-2xl py-7 text-gray-200 font-mono bg-transparent pl-3 md:px-5 outline-none"
-                placeholder="0.0"
-              />
+      <div  className=" w-full">
+        <div className="  my-auto mx-4 md:mx-10 relative bg-[#212429] bg-opacity-30 border border-slate-700 p-10 py-12  rounded-xl flex-col gap-6 flex items-center justify-center">
+          <h1 className="text-gray-200 mr-auto text-2xl font-semibold">Swap</h1>
+          <div className=" w-full flex items-center flex-col justify-center gap-3">
+            <div className=" space-y-4 w-full flex flex-col items-center">
+              <div className=" w-full relative md:w-full flex items-center bg-transparent border border-slate-700  rounded-2xl px-5">
+                <Image
+                  alt=""
+                  src={token2}
+                  width={100}
+                  height={100}
+                  className=" w-7 h-7"
+                />
+                <input
+                  type="number"
+                  className=" text-2xl py-7 text-gray-200 font-mono bg-transparent pl-3 md:px-5 outline-none"
+                  placeholder="0.0"
+                />
 
-              <button className="absolute right-4 active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white rounded-md px-3 p-2">
-                Max
-              </button>
+                <button className="absolute right-4 active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white rounded-md px-3 p-2">
+                  Max
+                </button>
+              </div>
+              <div className=" w-full relative md:w-full flex items-center bg-transparent border border-slate-700  rounded-2xl px-5">
+                <Image
+                  alt=""
+                  src={token1}
+                  width={100}
+                  height={100}
+                  className=" w-7 h-7"
+                />
+                <input
+                  type="number"
+                  className=" text-2xl py-7 text-gray-200 font-mono bg-transparent pl-3 md:px-5 outline-none"
+                  placeholder="0.0"
+                />
+
+                <button className="absolute right-4 active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white rounded-md px-3 p-2">
+                  Max
+                </button>
+              </div>
+
+              {address ? (
+                <button
+                  style={{
+                    padding: "20px 0px",
+                    fontSize: "18px",
+                    width: "100%",
+                  }}
+                  className=" rounded-lg w-full text-white font-semibold bg-[#8a4fc5]"
+                >
+                  Swap
+                </button>
+              ) : (
+                <ConnectWallet
+                  className=" "
+                  style={{
+                    padding: "20px 0px",
+                    fontSize: "18px",
+                    width: "100%",
+                  }}
+                  theme="dark"
+                />
+              )}
             </div>
-            <div className=" relative md:w-full flex items-center bg-transparent border border-slate-700  rounded-2xl px-5">
-              <Image
-                alt=""
-                src={token1}
-                width={100}
-                height={100}
-                className=" w-7 h-7"
-              />
-              <input
-                type="number"
-                className=" text-2xl py-7 text-gray-200 font-mono bg-transparent pl-3 md:px-5 outline-none"
-                placeholder="0.0"
-              />
-
-              <button className="absolute right-4 active:scale-95 transition-all ease-in-out bg-gray-200 bg-opacity-10 text-white rounded-md px-3 p-2">
-                Max
-              </button>
-            </div>
-
-            {address ? (
-              <button
-                style={{
-                  padding: "20px 0px",
-                  fontSize: "18px",
-                  width: "100%",
-                }}
-                className=" rounded-lg w-full text-white font-semibold bg-[#8a4fc5]"
-              >
-                Swap
-              </button>
-            ) : (
-              <ConnectWallet
-                className=" "
-                style={{
-                  padding: "20px 0px",
-                  fontSize: "18px",
-                  width: "100%",
-                }}
-                theme="dark"
-              />
-            )}
           </div>
         </div>
       </div>

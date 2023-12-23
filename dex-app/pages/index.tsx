@@ -23,9 +23,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {/* hero */}
-      <div className="hero    -mt-24  ">
+      <div className="hero    -mt-24 ">
         <div className=" bg-black bg-opacity-60 flex items-center flex-wrap justify-center laptop:justify-around min-h-screen">
-          <div className=" md:px-8 px-4">
+          <div className=" md:px-8 px-6 pt-40 md:pt-4">
             <h1 className="font-bold sm:text-6xl md:max-w-2xl text-gray-300 text-4xl leading-none text-start tracking-tight mb-6 ">
               Token Exchange made easy with &nbsp;
               <span
@@ -63,7 +63,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className=" py-20 flex flex-col text-white items-center justify-center w-full">
+      <div className=" px-6 py-20 flex flex-col text-white items-center justify-center w-full">
         <h1 className="font-bold sm:text-4xl text-gray-300 text-3xl leading-none text-center tracking-tight mb-12 ">
           Built with &nbsp;
           <span
@@ -160,7 +160,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className=" py-20 flex flex-col text-white items-center justify-center w-full">
+      <div className=" px-6 py-20 flex flex-col text-white items-center justify-center w-full">
         <h1 className="font-bold sm:text-4xl text-gray-300 text-3xl leading-none text-center tracking-tight mb-12 ">
           How we built &nbsp;
           <span
@@ -191,7 +191,7 @@ export default function Home() {
         <Image src={cube} alt="cube" />
       </div>
 
-      <div className=" py-20 flex flex-col text-white items-center justify-center w-full">
+      <div className=" px-6 py-20 flex flex-col text-white items-center justify-center w-full">
         <h1 className="font-bold sm:text-4xl text-gray-300 text-3xl leading-none text-center tracking-tight mb-12 ">
           Why build web3 defi apps with &nbsp;
           <span
@@ -257,9 +257,9 @@ export default function Home() {
         </div>
       </div>
 
-      <div className=" pb-20 flex flex-col text-white items-center justify-center w-full">
+      <div className=" px-6 pb-20 flex flex-col text-white items-center justify-center w-full">
         <Image src={logo} alt="logo" />
-        <div className=" text-4xl mb-2 font-bold">
+        <div className=" text-4xl mb-2 font-bold text-center">
           Get started with thirdweb
         </div>
         <p className=" text-[#ECECEC]">

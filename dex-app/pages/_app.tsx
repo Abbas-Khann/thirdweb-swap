@@ -60,7 +60,7 @@ export default function App({ Component, pageProps }: AppProps) {
           <Navbar />
         </div>
         <Toaster position="bottom-center" reverseOrder={false} />
-        <div className=" relative min-h-screen">
+        <div className=" relative min-h-screen ">
           <Component {...pageProps} />
         </div>
       </div>

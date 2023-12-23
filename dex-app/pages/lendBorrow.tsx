@@ -369,7 +369,7 @@ export default function LendBorrow() {
   }, [selectedToken || address]);
 
   return (
-    <div className=" min-h-screen  pt-48 flex items-start justify-center">
+    <div className="px-6 min-h-screen py-20  md:pt-48 flex items-start justify-center">
       <div className=" grid grid-cols-12 gap-y-6 gap-x-12">
         <div className="col-span-12 items-center justify-center flex">
           <select
@@ -387,7 +387,7 @@ export default function LendBorrow() {
           </select>
         </div>
 
-        <div className=" mt-2 col-span-6 flex flex-col items-center justify-center gap-8 ">
+        <div className=" mt-2 col-span-12 md:col-span-6 flex flex-col items-center justify-center gap-8 ">
           <div className=" py-6 px-10 laptop:min-w-[420px] flex flex-col items-stretch justify-center gap-3 text-white border border-gray-400 rounded-md ">
             <div className=" flex items-center justify-between">
               <div>Wallet Balance</div>
@@ -418,7 +418,7 @@ export default function LendBorrow() {
           </div>
         </div>
 
-        <div className=" col-span-6 flex flex-col items-center justify-center gap-8 ">
+        <div className=" col-span-12 md:col-span-6 flex flex-col items-center justify-center gap-8 ">
           <div className=" py-6 px-10 laptop:min-w-[420px] flex flex-col items-stretch justify-center gap-3 text-white border border-gray-400 rounded-md ">
             <div className=" flex items-center justify-between">
               <div>Supplied amount</div>
